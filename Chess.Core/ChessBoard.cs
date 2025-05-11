@@ -23,24 +23,24 @@ public class ChessBoard
 
     private void Setup()
     {
-        SetupBackrank(PieceColour.White);
-        // Setup white pawns
-        for (var col = 0; col < 8; col++)
-        {
-            Board[col, 1] = new Pawn(PieceColour.White);
-        }
-
-        SetupBackrank(PieceColour.Black);
+        SetupBackRank(PieceColour.Black);
         // Setup black pawns
         for (var col = 0; col < 8; col++)
         {
-            Board[col, 6]  = new Pawn(PieceColour.Black);;
+            Board[col, 1]  = new Pawn(PieceColour.Black);
+        }
+
+        SetupBackRank(PieceColour.White);
+        // Setup white pawns
+        for (var col = 0; col < 8; col++)
+        {
+            Board[col, 6] = new Pawn(PieceColour.White);
         }
     }
 
-    private void SetupBackrank(PieceColour colour)
+    private void SetupBackRank(PieceColour colour)
     {
-        var row = colour == PieceColour.White ? 0 : 7;
+        var row = colour == PieceColour.White ? 7 : 0;
         Board[row, 0] = new Rook(colour);
         Board[row, 1] = new Knight(colour);
         Board[row, 2] = new Bishop(colour);
