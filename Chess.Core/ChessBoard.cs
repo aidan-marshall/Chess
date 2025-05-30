@@ -6,6 +6,8 @@ public class ChessBoard
 {
     public ChessPiece?[,] Board { get; private set; } = new ChessPiece?[8, 8];
 
+    public ChessMove? LastMove { get; private set; }
+
     public ChessBoard()
     {
         Setup();

@@ -12,12 +12,18 @@ public class ChessGame(ChessBoard board)
     {
         var piece = Board.GetPiece(move.From);
                 
-        if (piece == null)
+        if (piece == null || piece.Colour != ToMove)
         {
             return false;
         }
-
+        
+        if (!piece.ValidMove(move, Board))
+        {
+            return false;
+        }
+        
+        ToMove = ToMove == PieceColour.White ? PieceColour.Black : PieceColour.White;
+        
         return true;
     }
-
 }
