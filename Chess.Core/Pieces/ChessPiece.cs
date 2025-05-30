@@ -1,6 +1,8 @@
 namespace Chess.Core.Pieces;
 
-public abstract class ChessPiece(PieceColour colour)
+
+
+public abstract class ChessPiece(PieceColour colour) : IChessPiece
 {
     public PieceColour Colour { get; } = colour;
     public abstract PieceType Type { get; }

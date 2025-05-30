@@ -2,10 +2,12 @@
 
 namespace Chess.Core;
 
-public class ChessBoard
+public class ChessBoard : IChessBoard
 {
+    ChessPiece?[,] IChessBoard.Board { get => Board; }
     public ChessPiece?[,] Board { get; private set; } = new ChessPiece?[8, 8];
 
+    ChessMove? IChessBoard.LastMove { get => LastMove; }
     public ChessMove? LastMove { get; private set; }
 
     public ChessBoard()

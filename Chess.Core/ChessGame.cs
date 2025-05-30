@@ -2,7 +2,7 @@ using Chess.Core.Pieces;
 
 namespace Chess.Core;
 
-public class ChessGame(ChessBoard board)
+public class ChessGame(ChessBoard board) : IChessGame
 {
     public PieceColour ToMove { get; private set; } = PieceColour.White;
 
