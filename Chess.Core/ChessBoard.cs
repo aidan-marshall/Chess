@@ -27,18 +27,19 @@ public class ChessBoard : IChessBoard
 
     private void Setup()
     {
+
         SetupBackRank(PieceColour.Black);
         // Setup black pawns
         for (var col = 0; col < 8; col++)
         {
-            Board[col, 1]  = new Pawn(PieceColour.Black);
+            Board[1, col] = new Pawn(PieceColour.Black);
         }
 
         SetupBackRank(PieceColour.White);
         // Setup white pawns
         for (var col = 0; col < 8; col++)
         {
-            Board[col, 6] = new Pawn(PieceColour.White);
+            Board[6, col] = new Pawn(PieceColour.White);
         }
     }
 

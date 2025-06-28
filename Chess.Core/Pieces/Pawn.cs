@@ -27,21 +27,23 @@ public class Pawn(PieceColour _) : ChessPiece(_)
                 return true;
         }
         
-        // Capture moves
-        if (Math.Abs(move.From.col - move.To.col) != 1 || (move.From.row - move.To.row) != direction) return false;
-        var targetPiece = board.GetPiece(move.To);
-        if (targetPiece != null && targetPiece.Colour != Colour)
-            return true;
-            
-        // En passant capture
-        if (targetPiece != null) return false;
-        // Check for en passant - get the pawn that might be captured
-        var enPassantTarget = board.GetPiece((move.From.row, move.To.col));
+        // Diagonal move (potential capture or en passant)
+        if (Math.Abs(move.From.col - move.To.col) == 1 && (move.From.row - move.To.row) == direction)
+        {
+            var targetPiece = board.GetPiece(move.To);
+            if (targetPiece != null && targetPiece.Colour != Colour)
+                return true; // Normal capture
 
-        // Check if the piece is a pawn of the opposite color and eligible for en passant
-        return enPassantTarget is Pawn enemyPawn && 
-               enemyPawn.Colour != Colour && 
-               enemyPawn.EnPassantAllowed;
+            // En passant
+            var enPassantTarget = board.GetPiece((move.From.row, move.To.col));
+            if (targetPiece == null && enPassantTarget is Pawn enemyPawn &&
+                enemyPawn.Colour != Colour && enemyPawn.EnPassantAllowed)
+                return true;
+
+            return false; // Diagonal move to empty square (not en passant) is invalid
+        }
+
+        return false;
     }
     
     public override void FinalizeTurn()
