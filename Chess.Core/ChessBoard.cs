@@ -9,10 +9,13 @@ public class ChessBoard : IChessBoard
 
     ChessMove? IChessBoard.LastMove { get => LastMove; }
     public ChessMove? LastMove { get; private set; }
+    public CastlingRights CastlingRights { get; private set; }
+    public (int, int)? EnPassantTargetSquare { get; set; }
 
     public ChessBoard()
     {
         Setup();
+        CastlingRights = CastlingRights.All;
     }
 
     public ChessPiece? GetPiece((int row, int col) position)
@@ -54,5 +57,10 @@ public class ChessBoard : IChessBoard
         Board[row, 5] = new Bishop(colour);
         Board[row, 6] = new Knight(colour);
         Board[row, 7] = new Rook(colour);
+    }
+
+    public void Clear()
+    {
+        Board = new ChessPiece?[8, 8];
     }
 }

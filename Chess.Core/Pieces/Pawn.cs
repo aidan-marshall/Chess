@@ -3,52 +3,59 @@ namespace Chess.Core.Pieces;
 public class Pawn(PieceColour _) : ChessPiece(_)
 {
     public override PieceType Type => PieceType.Pawn;
-    
-    public bool EnPassantAllowed { get; private set; }
 
+    /// <summary>
+    /// Validates a pseudo-legal move for a Pawn.
+    /// This method checks for all of a pawn's unique movement patterns but does NOT
+    /// validate for check or pins. It relies on the board state for en passant.
+    /// </summary>
     public override bool ValidMove(ChessMove move, ChessBoard board)
     {
-        var direction = Colour == PieceColour.White ? 1 : -1;
-        var startingRow = Colour == PieceColour.White ? 6 : 1;
-        
-        // Forward move
-        if (move.From.col == move.To.col)
+        // Determine pawn direction and starting row based on color.
+        int direction = this.Colour == PieceColour.White ? -1 : 1; // White moves from row 6->0, Black from 1->7
+        int startRow = this.Colour == PieceColour.White ? 6 : 1;
+
+        var (fromRow, fromCol) = move.From;
+        var (toRow, toCol) = move.To;
+
+        // --- 1. Forward Moves ---
+        if (fromCol == toCol)
         {
-            var moveDistance = move.From.row - move.To.row;
-            
-            // Normal one square forward move
-            if (moveDistance == direction && board.GetPiece(move.To) == null)
+            // Standard one-square move
+            if (toRow == fromRow + direction && board.GetPiece(move.To) == null)
+            {
                 return true;
-                
-            // The first move can be two squares
-            if (move.From.row == startingRow && moveDistance == direction * 2 
-                && board.GetPiece(move.To) == null 
-                && board.GetPiece((move.From.row - direction, move.To.col)) == null)
-                return true;
+            }
+
+            // Initial two-square move
+            if (fromRow == startRow && toRow == fromRow + 2 * direction && board.GetPiece(move.To) == null)
+            {
+                // The path must also be clear (the square being jumped over)
+                var jumpedSquare = (fromRow + direction, fromCol);
+                if (board.GetPiece(jumpedSquare) == null)
+                {
+                    return true;
+                }
+            }
         }
-        
-        // Diagonal move (potential capture or en passant)
-        if (Math.Abs(move.From.col - move.To.col) == 1 && (move.From.row - move.To.row) == direction)
+
+        // --- 2. Diagonal Moves (Capture or En Passant) ---
+        if (Math.Abs(toCol - fromCol) == 1 && toRow == fromRow + direction)
         {
+            // Standard capture
             var targetPiece = board.GetPiece(move.To);
-            if (targetPiece != null && targetPiece.Colour != Colour)
-                return true; // Normal capture
-
-            // En passant
-            var enPassantTarget = board.GetPiece((move.From.row, move.To.col));
-            if (targetPiece == null && enPassantTarget is Pawn enemyPawn &&
-                enemyPawn.Colour != Colour && enemyPawn.EnPassantAllowed)
+            if (targetPiece != null && targetPiece.Colour != this.Colour)
+            {
                 return true;
+            }
 
-            return false; // Diagonal move to empty square (not en passant) is invalid
+            // En Passant capture
+            if (move.To == board.EnPassantTargetSquare)
+            {
+                return true;
+            }
         }
 
         return false;
-    }
-    
-    public override void FinalizeTurn()
-    {
-        // Reset en passant eligibility at the end of the turn
-        EnPassantAllowed = false;
     }
 }
