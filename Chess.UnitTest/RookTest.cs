@@ -6,7 +6,7 @@ namespace Chess.UnitTest;
 
 public class RookTest
 {
-    private readonly ChessBoard _board;
+    private readonly IChessBoard _board;
 
     public RookTest()
     {

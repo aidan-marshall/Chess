@@ -6,7 +6,7 @@ namespace Chess.UnitTest;
 
 public class QueenTest
 {
-    private readonly ChessBoard _board;
+    private readonly IChessBoard _board;
 
     public QueenTest()
     {

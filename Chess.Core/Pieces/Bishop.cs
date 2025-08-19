@@ -4,7 +4,7 @@ public class Bishop(PieceColour colour) : ChessPiece(colour)
 {
     public override PieceType Type => PieceType.Bishop;
 
-    public override bool ValidMove(ChessMove move, ChessBoard board)
+    public override bool ValidMove(ChessMove move, IChessBoard board)
     {
         var (fromRow, fromCol) = move.From;
         var (toRow, toCol) = move.To;

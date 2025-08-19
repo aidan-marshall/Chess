@@ -5,5 +5,6 @@ namespace Chess.Core;
 public interface IChessGame
 {
     PieceColour ToMove { get; }
-    bool MovePiece(ChessMove move);
+    GameStatus Status { get; }
+    public MoveResult MakeMove(ChessMove move);
 }

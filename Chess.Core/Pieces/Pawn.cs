@@ -9,7 +9,7 @@ public class Pawn(PieceColour _) : ChessPiece(_)
     /// This method checks for all of a pawn's unique movement patterns but does NOT
     /// validate for check or pins. It relies on the board state for en passant.
     /// </summary>
-    public override bool ValidMove(ChessMove move, ChessBoard board)
+    public override bool ValidMove(ChessMove move, IChessBoard board)
     {
         // Determine pawn direction and starting row based on color.
         int direction = this.Colour == PieceColour.White ? -1 : 1; // White moves from row 6->0, Black from 1->7

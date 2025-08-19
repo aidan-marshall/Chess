@@ -23,7 +23,7 @@ public class ChessBoard : IChessBoard
         return Board[position.row, position.col];
     }
 
-    public void SetPiece((int row, int col) position, ChessPiece piece)
+    public void SetPiece((int row, int col) position, ChessPiece? piece)
     {
         Board[position.row, position.col] = piece;
     }
@@ -62,5 +62,30 @@ public class ChessBoard : IChessBoard
     public void Clear()
     {
         Board = new ChessPiece?[8, 8];
+    }
+
+    public (int, int)? FindKing(PieceColour kingColour)
+    {
+        for (int r = 0; r < 8; r++)
+        {
+            for (int c = 0; c < 8; c++)
+            {
+                var piece = GetPiece((r, c));
+                if (piece is King && piece.Colour == kingColour)
+                {
+                    return (r, c);
+                }
+            }
+        }
+        return null;
+    }
+
+    public ChessPiece PerformMove(ChessMove move)
+    {
+        var piece = GetPiece(move.From) ?? throw new InvalidOperationException("No piece at the source square.");
+        SetPiece(move.To, piece);
+        SetPiece(move.From, null);
+
+        return piece;
     }
 }

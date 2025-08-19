@@ -2,28 +2,51 @@ using Chess.Core.Pieces;
 
 namespace Chess.Core;
 
-public class ChessGame(ChessBoard board) : IChessGame
+public enum GameStatus { Ongoing, Check, Checkmate, Stalemate }
+public class ChessGame(IChessBoard board) : IChessGame
 {
     public PieceColour ToMove { get; private set; } = PieceColour.White;
+    public GameStatus Status { get; private set; } = GameStatus.Ongoing;
+    private readonly IChessBoard _board = board;
 
-    private ChessBoard Board { get; set; } = board;
-
-    public bool MovePiece(ChessMove move)
+    public MoveResult MakeMove(ChessMove move)
     {
-        var piece = Board.GetPiece(move.From);
-                
-        if (piece == null || piece.Colour != ToMove)
-        {
-            return false;
-        }
-        
-        if (!piece.ValidMove(move, Board))
-        {
-            return false;
-        }
-        
-        ToMove = ToMove == PieceColour.White ? PieceColour.Black : PieceColour.White;
-        
-        return true;
+        var piece = _board.GetPiece(move.From);
+
+        if (piece == null)
+            return MoveResult.PieceNotFound;
+
+        if (!piece.ValidMove(move, _board))
+            return MoveResult.IllegalMove;
+
+        if (!IsMoveFullyLegal(move))
+            return MoveResult.MoveLeavesKingInCheck;
+
+        return MoveResult.Success;
+    }
+
+    private bool IsMoveFullyLegal(ChessMove move)
+    {
+        var piece = _board.GetPiece(move.From);
+
+        if (piece is King && Math.Abs(move.To.col - move.From.col) == 2)
+            return IsCastleValid(move);
+
+        return IsKingInCheck(move);
+    }
+
+    private bool IsKingInCheck(ChessMove move)
+    {
+        throw new NotImplementedException();
+    }
+
+    private bool IsSquareAttacked((int, int) kingPosition, PieceColour colour)
+    {
+        throw new NotImplementedException();
+    }
+
+    private bool IsCastleValid(ChessMove move)
+    {
+        throw new NotImplementedException();
     }
 }
