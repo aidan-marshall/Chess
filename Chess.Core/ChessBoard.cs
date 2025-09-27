@@ -26,6 +26,9 @@ public class ChessBoard : IChessBoard
     public void SetPiece((int row, int col) position, ChessPiece? piece)
     {
         Board[position.row, position.col] = piece;
+
+        if (piece is not null)
+            piece.MovedAmount++;
     }
 
     private void Setup()
@@ -64,7 +67,7 @@ public class ChessBoard : IChessBoard
         Board = new ChessPiece?[8, 8];
     }
 
-    public (int, int)? FindKing(PieceColour kingColour)
+    public (int, int) FindKing(PieceColour kingColour)
     {
         for (int r = 0; r < 8; r++)
         {
@@ -77,7 +80,8 @@ public class ChessBoard : IChessBoard
                 }
             }
         }
-        return null;
+
+        throw new Exception("King not found on the board.");
     }
 
     public ChessPiece PerformMove(ChessMove move)
@@ -87,5 +91,10 @@ public class ChessBoard : IChessBoard
         SetPiece(move.From, null);
 
         return piece;
+    }
+
+    public bool IsSquareAttacked((int, int) position, PieceColour colour)
+    {
+        throw new NotImplementedException();
     }
 }

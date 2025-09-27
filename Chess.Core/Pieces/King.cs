@@ -38,14 +38,10 @@ public class King(PieceColour colour) : ChessPiece(colour)
 
         // --- 2. Castling Attempt: Two squares horizontally FROM THE STARTING SQUARE ---
         // ChessGame class will handle the complex rules of castling,
-        bool isCastlePattern = rowDiff == 0 && colDiff == 2;
+        var isCastlePattern = rowDiff == 0 && colDiff == 2;
         if (isCastlePattern)
         {
-            // A castling pattern is only a valid pseudo-move if the king is on its starting square.
-            bool isWhiteKingOnStart = this.Colour == PieceColour.White && fromRow == 7 && fromCol == 4;
-            bool isBlackKingOnStart = this.Colour == PieceColour.Black && fromRow == 0 && fromCol == 4;
-
-            if (isWhiteKingOnStart || isBlackKingOnStart)
+            if (!HasMoved)
             {
                 return true;
             }
@@ -54,4 +50,5 @@ public class King(PieceColour colour) : ChessPiece(colour)
         // If the move is not a standard 1-square move or a valid castle attempt pattern, it's invalid.
         return false;
     }
+
 }
