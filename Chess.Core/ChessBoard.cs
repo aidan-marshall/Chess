@@ -6,16 +6,14 @@ public class ChessBoard : IChessBoard
 {
     ChessPiece?[,] IChessBoard.Board { get => Board; }
     public ChessPiece?[,] Board { get; private set; } = new ChessPiece?[8, 8];
-
-    ChessMove? IChessBoard.LastMove { get => LastMove; }
+    ChessMove? IChessBoard.LastMove => Moves.LastOrDefault();
+    public List<ChessMove> Moves { get; } = [];
     public ChessMove? LastMove { get; private set; }
-    public CastlingRights CastlingRights { get; private set; }
     public (int, int)? EnPassantTargetSquare { get; set; }
 
     public ChessBoard()
     {
         Setup();
-        CastlingRights = CastlingRights.All;
     }
 
     public ChessPiece? GetPiece((int row, int col) position)
@@ -27,8 +25,7 @@ public class ChessBoard : IChessBoard
     {
         Board[position.row, position.col] = piece;
 
-        if (piece is not null)
-            piece.MovedAmount++;
+
     }
 
     private void Setup()
@@ -90,11 +87,30 @@ public class ChessBoard : IChessBoard
         SetPiece(move.To, piece);
         SetPiece(move.From, null);
 
+        piece.MovedAmount++;
+        Moves.Add(move);
+
         return piece;
     }
 
-    public bool IsSquareAttacked((int, int) position, PieceColour colour)
+    public bool IsSquareAttacked((int, int) attackedPosition, PieceColour attackingColour)
     {
-        throw new NotImplementedException();
+        for (var r = 0; r < 8; r++)
+        {
+            for (var c = 0; c < 8; c++)
+            {
+                var currentPosition = (r, c);
+
+                var piece = GetPiece(currentPosition);
+
+                if (piece == null || piece.Colour != attackingColour) continue;
+
+                var move = new ChessMove((currentPosition), attackedPosition);
+
+                if (piece.ValidMove(move, this)) return true;
+            }
+        }
+
+        return false;
     }
 }

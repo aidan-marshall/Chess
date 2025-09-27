@@ -33,7 +33,7 @@ public class ChessGame(IChessBoard board) : IChessGame
     private bool IsMoveFullyLegal(ChessMove move, ChessPiece piece)
     {
         if (piece is King king && Math.Abs(move.To.col - move.From.col) == 2)
-            return IsCastleValid(move, king);
+            return IsCastleLegal(move, king);
 
         return IsKingInCheck(move);
     }
@@ -43,7 +43,7 @@ public class ChessGame(IChessBoard board) : IChessGame
         throw new NotImplementedException();
     }
 
-    private bool IsCastleValid(ChessMove move, King king)
+    private bool IsCastleLegal(ChessMove move, King king)
     {
         var rowDiff = Math.Abs(move.To.row - move.From.row);
         var colDiff = Math.Abs(move.To.col - move.From.col);
@@ -75,6 +75,20 @@ public class ChessGame(IChessBoard board) : IChessGame
         if (rook.Colour != king.Colour) return false;
 
         if (rook.HasMoved) return false;
+
+        var step = isQueenSide ? -1 : 1;
+
+        // determine if path is clear
+        for (var col = move.From.col + step; col != colToFetch + step; col += step)
+        {
+            var position = (move.From.row, col);
+
+            if (_board.GetPiece(position) is not null)
+                return false;
+
+            if (col != colToFetch && _board.IsSquareAttacked(position, king.Colour.Opposite()))
+                return false ;
+        }
 
         return true;
     }

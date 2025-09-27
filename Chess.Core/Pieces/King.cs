@@ -2,8 +2,6 @@ namespace Chess.Core.Pieces;
 
 public class King(PieceColour colour) : ChessPiece(colour)
 {
-    public override PieceType Type => PieceType.King;
-
     /// <summary>
     /// Validates a pseudo-legal move for a King.
     /// This method identifies the King's basic movement patterns but does NOT validate

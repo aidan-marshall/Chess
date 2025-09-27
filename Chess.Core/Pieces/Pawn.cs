@@ -2,8 +2,6 @@ namespace Chess.Core.Pieces;
 
 public class Pawn(PieceColour _) : ChessPiece(_)
 {
-    public override PieceType Type => PieceType.Pawn;
-
     /// <summary>
     /// Validates a pseudo-legal move for a Pawn.
     /// This method checks for all of a pawn's unique movement patterns but does NOT

@@ -12,5 +12,5 @@ public interface IChessBoard
     (int, int) FindKing(PieceColour kingColour);
     ChessPiece PerformMove(ChessMove move);
     void Clear();
-    bool IsSquareAttacked((int, int) position, PieceColour colour);
+    bool IsSquareAttacked((int, int) position, PieceColour attackingColour);
 }
