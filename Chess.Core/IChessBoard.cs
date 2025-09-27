@@ -9,7 +9,10 @@ public interface IChessBoard
     public (int, int)? EnPassantTargetSquare { get; set; }
     ChessPiece? GetPiece((int row, int col) position);
     void SetPiece((int row, int col) position, ChessPiece? piece);
-    (int, int)? FindKing(PieceColour kingColour);
+    (int, int) FindKing(PieceColour kingColour);
     ChessPiece PerformMove(ChessMove move);
     void Clear();
+    bool HasKingMoved((int row, int col) position, King king);
+    bool HasRookMoved(bool isQueenSide, PieceColour colourToFetch);
+    bool IsSquareAttacked((int, int) position, PieceColour colour);
 }
