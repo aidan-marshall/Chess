@@ -9,7 +9,7 @@ public class ChessGame(IChessBoard board) : IChessGame
     public GameStatus Status { get; private set; } = GameStatus.Ongoing;
     private readonly IChessBoard _board = board;
 
-    public MoveResult MakeMove(ChessMove move)
+    public MoveResult MakeMove(Move move)
     {
         var piece = _board.GetPiece(move.From);
 
@@ -30,23 +30,23 @@ public class ChessGame(IChessBoard board) : IChessGame
         return MoveResult.Success;
     }
 
-    private bool IsMoveFullyLegal(ChessMove move, ChessPiece piece)
+    private bool IsMoveFullyLegal(Move move, ChessPiece piece)
     {
-        if (piece is King king && Math.Abs(move.To.col - move.From.col) == 2)
+        if (piece is King king && Math.Abs(move.To.Column - move.From.Column) == 2)
             return IsCastleLegal(move, king);
 
         return IsKingInCheck(move);
     }
 
-    private bool IsKingInCheck(ChessMove move)
+    private bool IsKingInCheck(Move move)
     {
         throw new NotImplementedException();
     }
 
-    private bool IsCastleLegal(ChessMove move, King king)
+    private bool IsCastleLegal(Move move, King king)
     {
-        var rowDiff = Math.Abs(move.To.row - move.From.row);
-        var colDiff = Math.Abs(move.To.col - move.From.col);
+        var rowDiff = Math.Abs(move.To.Row - move.From.Row);
+        var colDiff = Math.Abs(move.To.Column - move.From.Column);
 
         var isCastlePattern = rowDiff == 0 && colDiff == 2;
 
@@ -62,13 +62,15 @@ public class ChessGame(IChessBoard board) : IChessGame
 
         // Determine which rook to try and fetch
         var isQueenSide = king.Colour == PieceColour.White
-            ? move.To.col < move.From.col
-            : move.To.col > move.From.col;
+            ? move.To.Column < move.From.Column
+            : move.To.Column > move.From.Column;
 
         var rowToFetch = king.Colour == PieceColour.White ? 7 : 0;
         var colToFetch = isQueenSide ? 0 : 7;
 
-        var rookCastling = _board.GetPiece((rowToFetch, colToFetch));
+        var rookStartingPosition = new Position(rowToFetch, colToFetch);
+
+        var rookCastling = _board.GetPiece(rookStartingPosition);
 
         if (rookCastling is not Rook rook) return false;
 
@@ -79,9 +81,9 @@ public class ChessGame(IChessBoard board) : IChessGame
         var step = isQueenSide ? -1 : 1;
 
         // determine if path is clear
-        for (var col = move.From.col + step; col != colToFetch + step; col += step)
+        for (var col = move.From.Column + step; col != colToFetch + step; col += step)
         {
-            var position = (move.From.row, col);
+            var position = new Position(move.From.Row, col);
 
             if (_board.GetPiece(position) is not null)
                 return false;

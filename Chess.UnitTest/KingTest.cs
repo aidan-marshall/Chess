@@ -16,105 +16,108 @@ public class KingTest
 
     // --- I. Tests for VALID Moves ---
 
-    [Theory]
-    [InlineData(3, 3, 2, 2)] // Up-Left
-    [InlineData(3, 3, 2, 3)] // Up
-    [InlineData(3, 3, 2, 4)] // Up-Right
-    [InlineData(3, 3, 3, 2)] // Left
-    [InlineData(3, 3, 3, 4)] // Right
-    [InlineData(3, 3, 4, 2)] // Down-Left
-    [InlineData(3, 3, 4, 3)] // Down
-    [InlineData(3, 3, 4, 4)] // Down-Right
-    public void ValidMove_ShouldSucceed_WhenMovingOneSquareToEmpty(int fromRow, int fromCol, int toRow, int toCol)
-    {
-        // Arrange
-        var king = new King(PieceColour.White);
-        _board.SetPiece((fromRow, fromCol), king);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+    public static IEnumerable<object[]> KingMoves_Valid =>
+        new List<object[]>
+        {
+            new object[] { new Position(3, 3), new Position(2, 2) }, // Up-Left
+            new object[] { new Position(3, 3), new Position(2, 3) }, // Up
+            new object[] { new Position(3, 3), new Position(2, 4) }, // Up-Right
+            new object[] { new Position(3, 3), new Position(3, 2) }, // Left
+            new object[] { new Position(3, 3), new Position(3, 4) }, // Right
+            new object[] { new Position(3, 3), new Position(4, 2) }, // Down-Left
+            new object[] { new Position(3, 3), new Position(4, 3) }, // Down
+            new object[] { new Position(3, 3), new Position(4, 4) }  // Down-Right
+        };
 
-        // Act
+    [Theory]
+    [MemberData(nameof(KingMoves_Valid))]
+    public void ValidMove_ShouldSucceed_WhenMovingOneSquareToEmpty(Position from, Position to)
+    {
+        var king = new King(PieceColour.White);
+        _board.SetPiece(from, king);
+        var move = new Move(from, to);
+
         bool isValid = king.ValidMove(move, _board);
 
-        // Assert
         isValid.Should().BeTrue();
     }
 
     [Fact]
     public void ValidMove_ShouldSucceed_WhenCapturingEnemyPiece()
     {
-        // Arrange
         var king = new King(PieceColour.White);
         var enemyPawn = new Pawn(PieceColour.Black);
-        _board.SetPiece((3, 3), king);
-        _board.SetPiece((4, 4), enemyPawn);
-        var move = new ChessMove((3, 3), (4, 4));
+        var from = new Position(3, 3);
+        var to = new Position(4, 4);
 
-        // Act
+        _board.SetPiece(from, king);
+        _board.SetPiece(to, enemyPawn);
+        var move = new Move(from, to);
+
         bool isValid = king.ValidMove(move, _board);
 
-        // Assert
         isValid.Should().BeTrue();
     }
 
-    [Theory]
-    [InlineData(7, 4, 7, 6)] // White King-side castle (e1g1)
-    [InlineData(7, 4, 7, 2)] // White Queen-side castle (e1c1)
-    [InlineData(0, 4, 0, 6)] // Black King-side castle (e8g8)
-    [InlineData(0, 4, 0, 2)] // Black Queen-side castle (e8c8)
-    public void ValidMove_ShouldSucceed_WhenIdentifyingCastlePattern(int fromRow, int fromCol, int toRow, int toCol)
-    {
-        // Arrange
-        // This test ONLY validates that the King piece recognizes the 2-square move pattern.
-        // It does NOT test the rules of castling (e.g., clear path, rights),
-        // as that is the ChessGame's responsibility.
+    public static IEnumerable<object[]> KingMoves_Castle =>
+        new List<object[]>
+        {
+            new object[] { new Position(7, 4), new Position(7, 6) }, // White King-side
+            new object[] { new Position(7, 4), new Position(7, 2) }, // White Queen-side
+            new object[] { new Position(0, 4), new Position(0, 6) }, // Black King-side
+            new object[] { new Position(0, 4), new Position(0, 2) }  // Black Queen-side
+        };
 
-        // Create a king of the correct color based on its starting row.
-        var kingColour = (fromRow == 7) ? PieceColour.White : PieceColour.Black;
+    [Theory]
+    [MemberData(nameof(KingMoves_Castle))]
+    public void ValidMove_ShouldSucceed_WhenIdentifyingCastlePattern(Position from, Position to)
+    {
+        var kingColour = (from.Row == 7) ? PieceColour.White : PieceColour.Black;
         var king = new King(kingColour);
 
-        _board.SetPiece((fromRow, fromCol), king);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+        _board.SetPiece(from, king);
+        var move = new Move(from, to);
 
-        // Act
         bool isValid = king.ValidMove(move, _board);
 
-        // Assert
-        isValid.Should().BeTrue("the king piece should identify a two-square horizontal move from its starting square as a castling attempt");
+        isValid.Should().BeTrue("the king should recognize a two-square horizontal move as a castling attempt");
     }
+
     // --- II. Tests for INVALID Moves ---
 
     [Fact]
     public void InvalidMove_ShouldFail_WhenLandingOnFriendlyPiece()
     {
-        // Arrange
         var king = new King(PieceColour.White);
         var friendlyPawn = new Pawn(PieceColour.White);
-        _board.SetPiece((3, 3), king);
-        _board.SetPiece((4, 4), friendlyPawn);
-        var move = new ChessMove((3, 3), (4, 4));
+        var from = new Position(3, 3);
+        var to = new Position(4, 4);
 
-        // Act
+        _board.SetPiece(from, king);
+        _board.SetPiece(to, friendlyPawn);
+        var move = new Move(from, to);
+
         bool isValid = king.ValidMove(move, _board);
 
-        // Assert
         isValid.Should().BeFalse("a king cannot capture a friendly piece");
     }
 
-    [Theory]
-    [InlineData(3, 3, 3, 5)] // Two squares straight
-    [InlineData(3, 3, 5, 5)] // Two squares diagonally
-    [InlineData(3, 3, 1, 4)] // Knight-like move
-    public void InvalidMove_ShouldFail_WhenMovePatternIsInvalid(int fromRow, int fromCol, int toRow, int toCol)
-    {
-        // Arrange
-        var king = new King(PieceColour.White);
-        _board.SetPiece((fromRow, fromCol), king);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+    public static IEnumerable<object[]> KingMoves_Invalid =>
+        [
+            [new Position(3, 3), new Position(5, 5)], // Two squares diagonally
+            [new Position(3, 3), new Position(1, 4)]  // Knight-like
+        ];
 
-        // Act
+    [Theory]
+    [MemberData(nameof(KingMoves_Invalid))]
+    public void InvalidMove_ShouldFail_WhenMovePatternIsInvalid(Position from, Position to)
+    {
+        var king = new King(PieceColour.White);
+        _board.SetPiece(from, king);
+        var move = new Move(from, to);
+
         bool isValid = king.ValidMove(move, _board);
 
-        // Assert
         isValid.Should().BeFalse();
     }
 }

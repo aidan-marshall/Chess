@@ -16,55 +16,56 @@ public class RookTest
 
     // --- I. Tests for VALID Moves ---
 
+    public static IEnumerable<object[]> RookValidHorizontalMoves =>
+        new List<object[]>
+        {
+            new object[] { new Position(3, 3), new Position(3, 7) }, // move right
+            new object[] { new Position(3, 3), new Position(3, 0) }  // move left
+        };
+
     [Theory]
-    [InlineData(3, 3, 3, 7)] // Move right
-    [InlineData(3, 3, 3, 0)] // Move left
-    public void ValidMove_ShouldSucceed_WhenMovingHorizontallyOnEmptyBoard(int fromRow, int fromCol, int toRow, int toCol)
+    [MemberData(nameof(RookValidHorizontalMoves))]
+    public void ValidMove_ShouldSucceed_WhenMovingHorizontallyOnEmptyBoard(Position from, Position to)
     {
-        // Arrange
         var rook = new Rook(PieceColour.White);
-        _board.SetPiece((fromRow, fromCol), rook);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+        _board.SetPiece(from, rook);
 
-        // Act
-        bool isValid = rook.ValidMove(move, _board);
-
-        // Assert
-        isValid.Should().BeTrue();
+        var move = new Move(from, to);
+        rook.ValidMove(move, _board).Should().BeTrue();
     }
 
+    public static IEnumerable<object[]> RookValidVerticalMoves =>
+        new List<object[]>
+        {
+            new object[] { new Position(3, 3), new Position(0, 3) }, // move up
+            new object[] { new Position(3, 3), new Position(7, 3) }  // move down
+        };
+
     [Theory]
-    [InlineData(3, 3, 0, 3)] // Move up
-    [InlineData(3, 3, 7, 3)] // Move down
-    public void ValidMove_ShouldSucceed_WhenMovingVerticallyOnEmptyBoard(int fromRow, int fromCol, int toRow, int toCol)
+    [MemberData(nameof(RookValidVerticalMoves))]
+    public void ValidMove_ShouldSucceed_WhenMovingVerticallyOnEmptyBoard(Position from, Position to)
     {
-        // Arrange
         var rook = new Rook(PieceColour.White);
-        _board.SetPiece((fromRow, fromCol), rook);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+        _board.SetPiece(from, rook);
 
-        // Act
-        bool isValid = rook.ValidMove(move, _board);
-
-        // Assert
-        isValid.Should().BeTrue();
+        var move = new Move(from, to);
+        rook.ValidMove(move, _board).Should().BeTrue();
     }
 
     [Fact]
     public void ValidMove_ShouldSucceed_WhenCapturingEnemyPiece()
     {
-        // Arrange
         var rook = new Rook(PieceColour.White);
         var enemyPawn = new Pawn(PieceColour.Black);
-        _board.SetPiece((3, 3), rook);
-        _board.SetPiece((3, 7), enemyPawn);
-        var move = new ChessMove((3, 3), (3, 7));
 
-        // Act
-        bool isValid = rook.ValidMove(move, _board);
+        var from = new Position(3, 3);
+        var to = new Position(3, 7);
 
-        // Assert
-        isValid.Should().BeTrue();
+        _board.SetPiece(from, rook);
+        _board.SetPiece(to, enemyPawn);
+
+        var move = new Move(from, to);
+        rook.ValidMove(move, _board).Should().BeTrue();
     }
 
     // --- II. Tests for INVALID Moves ---
@@ -72,68 +73,68 @@ public class RookTest
     [Fact]
     public void InvalidMove_ShouldFail_WhenPathIsBlockedHorizontally()
     {
-        // Arrange
         var rook = new Rook(PieceColour.White);
         var blockingPawn = new Pawn(PieceColour.Black);
-        _board.SetPiece((3, 3), rook);
-        _board.SetPiece((3, 5), blockingPawn); // Blocker is between start and end
-        var move = new ChessMove((3, 3), (3, 7));
 
-        // Act
-        bool isValid = rook.ValidMove(move, _board);
+        var from = new Position(3, 3);
+        var to = new Position(3, 7);
+        var blocker = new Position(3, 5);
 
-        // Assert
-        isValid.Should().BeFalse("the horizontal path is blocked");
+        _board.SetPiece(from, rook);
+        _board.SetPiece(blocker, blockingPawn);
+
+        var move = new Move(from, to);
+        rook.ValidMove(move, _board).Should().BeFalse("the horizontal path is blocked");
     }
 
     [Fact]
     public void InvalidMove_ShouldFail_WhenPathIsBlockedVertically()
     {
-        // Arrange
         var rook = new Rook(PieceColour.White);
-        var blockingPawn = new Pawn(PieceColour.White); // Blocker can be friendly
-        _board.SetPiece((3, 3), rook);
-        _board.SetPiece((5, 3), blockingPawn); // Blocker is between start and end
-        var move = new ChessMove((3, 3), (7, 3));
+        var blockingPawn = new Pawn(PieceColour.White);
 
-        // Act
-        bool isValid = rook.ValidMove(move, _board);
+        var from = new Position(3, 3);
+        var to = new Position(7, 3);
+        var blocker = new Position(5, 3);
 
-        // Assert
-        isValid.Should().BeFalse("the vertical path is blocked");
+        _board.SetPiece(from, rook);
+        _board.SetPiece(blocker, blockingPawn);
+
+        var move = new Move(from, to);
+        rook.ValidMove(move, _board).Should().BeFalse("the vertical path is blocked");
     }
 
     [Fact]
     public void InvalidMove_ShouldFail_WhenLandingOnFriendlyPiece()
     {
-        // Arrange
         var rook = new Rook(PieceColour.White);
         var friendlyPawn = new Pawn(PieceColour.White);
-        _board.SetPiece((3, 3), rook);
-        _board.SetPiece((3, 7), friendlyPawn);
-        var move = new ChessMove((3, 3), (3, 7));
 
-        // Act
-        bool isValid = rook.ValidMove(move, _board);
+        var from = new Position(3, 3);
+        var to = new Position(3, 7);
 
-        // Assert
-        isValid.Should().BeFalse("a piece cannot capture a friendly piece");
+        _board.SetPiece(from, rook);
+        _board.SetPiece(to, friendlyPawn);
+
+        var move = new Move(from, to);
+        rook.ValidMove(move, _board).Should().BeFalse("a piece cannot capture a friendly piece");
     }
 
+    public static IEnumerable<object[]> RookInvalidMoves =>
+        new List<object[]>
+        {
+            new object[] { new Position(3, 3), new Position(5, 5) }, // diagonal
+            new object[] { new Position(3, 3), new Position(4, 5) }  // knight-like
+        };
+
     [Theory]
-    [InlineData(3, 3, 5, 5)] // Invalid Diagonal
-    [InlineData(3, 3, 4, 5)] // Invalid Knight-move
-    public void InvalidMove_ShouldFail_WhenMovePatternIsNotStraight(int fromRow, int fromCol, int toRow, int toCol)
+    [MemberData(nameof(RookInvalidMoves))]
+    public void InvalidMove_ShouldFail_WhenMovePatternIsNotStraight(Position from, Position to)
     {
-        // Arrange
         var rook = new Rook(PieceColour.White);
-        _board.SetPiece((fromRow, fromCol), rook);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+        _board.SetPiece(from, rook);
 
-        // Act
-        bool isValid = rook.ValidMove(move, _board);
-
-        // Assert
-        isValid.Should().BeFalse();
+        var move = new Move(from, to);
+        rook.ValidMove(move, _board).Should().BeFalse("a rook can only move straight horizontally or vertically");
     }
 }

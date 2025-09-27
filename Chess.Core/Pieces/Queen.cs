@@ -2,10 +2,10 @@ namespace Chess.Core.Pieces;
 
 public class Queen(PieceColour colour) : ChessPiece(colour)
 {
-    public override bool ValidMove(ChessMove move, IChessBoard board)
+    public override bool ValidMove(Move move, IChessBoard board)
     {
-        var (fromRow, fromCol) = move.From;
-        var (toRow, toCol) = move.To;
+        var (fromRow, fromCol) = move.From.ToTuple();
+        var (toRow, toCol) = move.To.ToTuple();
 
         int rowDiff = Math.Abs(toRow - fromRow);
         int colDiff = Math.Abs(toCol - fromCol);
@@ -31,7 +31,7 @@ public class Queen(PieceColour colour) : ChessPiece(colour)
         // Iterate through each square on the path between the start and end.
         while (currentRow != toRow || currentCol != toCol)
         {
-            if (board.GetPiece((currentRow, currentCol)) != null)
+            if (board.GetPiece(new Position(currentRow, currentCol)) != null)
             {
                 return false; // The path is blocked.
             }

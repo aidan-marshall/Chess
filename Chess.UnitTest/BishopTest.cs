@@ -24,9 +24,12 @@ public class BishopTest
     public void ValidMove_ShouldSucceed_WhenMovingDiagonallyOnEmptyBoard(int fromRow, int fromCol, int toRow, int toCol)
     {
         // Arrange
+        var from = new Position(fromRow, fromCol);
+        var to = new Position(toRow, toCol);
+
         var bishop = new Bishop(PieceColour.White);
-        _board.SetPiece((fromRow, fromCol), bishop);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+        _board.SetPiece(from, bishop);
+        var move = new Move(from, to);
 
         // Act
         bool isValid = bishop.ValidMove(move, _board);
@@ -39,11 +42,14 @@ public class BishopTest
     public void ValidMove_ShouldSucceed_WhenCapturingEnemyPiece()
     {
         // Arrange
+        var from = new Position(2, 2);
+        var to = new Position(5, 5);
+
         var bishop = new Bishop(PieceColour.White);
         var enemyPawn = new Pawn(PieceColour.Black);
-        _board.SetPiece((2, 2), bishop);
-        _board.SetPiece((5, 5), enemyPawn);
-        var move = new ChessMove((2, 2), (5, 5));
+        _board.SetPiece(from, bishop);
+        _board.SetPiece(to, enemyPawn);
+        var move = new Move(from, to);
 
         // Act
         bool isValid = bishop.ValidMove(move, _board);
@@ -55,10 +61,13 @@ public class BishopTest
     [Fact]
     public void ValidMove_ShouldSucceed_WhenMovingFromCorner()
     {
-        // Arrange: Test from corner a1 (row 7, col 0)
+        // Arrange: from corner a1 (row 7, col 0) to h8 (row 0, col 7)
+        var from = new Position(7, 0);
+        var to = new Position(0, 7);
+
         var bishop = new Bishop(PieceColour.White);
-        _board.SetPiece((7, 0), bishop);
-        var move = new ChessMove((7, 0), (0, 7)); // Move to h8
+        _board.SetPiece(from, bishop);
+        var move = new Move(from, to);
 
         // Act
         bool isValid = bishop.ValidMove(move, _board);
@@ -73,11 +82,15 @@ public class BishopTest
     public void InvalidMove_ShouldFail_WhenPathIsBlocked()
     {
         // Arrange
+        var from = new Position(2, 2);
+        var block = new Position(4, 4);
+        var to = new Position(6, 6);
+
         var bishop = new Bishop(PieceColour.White);
         var blockingPawn = new Pawn(PieceColour.Black); // Blocker can be friend or foe
-        _board.SetPiece((2, 2), bishop);
-        _board.SetPiece((4, 4), blockingPawn); // Place a piece in the middle of the path
-        var move = new ChessMove((2, 2), (6, 6));
+        _board.SetPiece(from, bishop);
+        _board.SetPiece(block, blockingPawn);
+        var move = new Move(from, to);
 
         // Act
         bool isValid = bishop.ValidMove(move, _board);
@@ -90,11 +103,14 @@ public class BishopTest
     public void InvalidMove_ShouldFail_WhenLandingOnFriendlyPiece()
     {
         // Arrange
+        var from = new Position(2, 2);
+        var to = new Position(5, 5);
+
         var bishop = new Bishop(PieceColour.White);
         var friendlyPawn = new Pawn(PieceColour.White);
-        _board.SetPiece((2, 2), bishop);
-        _board.SetPiece((5, 5), friendlyPawn);
-        var move = new ChessMove((2, 2), (5, 5));
+        _board.SetPiece(from, bishop);
+        _board.SetPiece(to, friendlyPawn);
+        var move = new Move(from, to);
 
         // Act
         bool isValid = bishop.ValidMove(move, _board);
@@ -110,9 +126,12 @@ public class BishopTest
     public void InvalidMove_ShouldFail_WhenMovePatternIsNotDiagonal(int fromRow, int fromCol, int toRow, int toCol)
     {
         // Arrange
+        var from = new Position(fromRow, fromCol);
+        var to = new Position(toRow, toCol);
+
         var bishop = new Bishop(PieceColour.White);
-        _board.SetPiece((fromRow, fromCol), bishop);
-        var move = new ChessMove((fromRow, fromCol), (toRow, toCol));
+        _board.SetPiece(from, bishop);
+        var move = new Move(from, to);
 
         // Act
         bool isValid = bishop.ValidMove(move, _board);
@@ -125,9 +144,12 @@ public class BishopTest
     public void InvalidMove_ShouldFail_WhenNotMoving()
     {
         // Arrange
+        var from = new Position(3, 3);
+        var to = new Position(3, 3);
+
         var bishop = new Bishop(PieceColour.White);
-        _board.SetPiece((3, 3), bishop);
-        var move = new ChessMove((3, 3), (3, 3));
+        _board.SetPiece(from, bishop);
+        var move = new Move(from, to);
 
         // Act
         bool isValid = bishop.ValidMove(move, _board);

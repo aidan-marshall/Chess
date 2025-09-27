@@ -34,7 +34,7 @@ public class ChessBoardUnitTest
         {
             for (var col = 0; col < 8; col++)
             {
-                Assert.Null(board.GetPiece((row, col)));
+                Assert.Null(board.GetPiece(new Position(row, col)));
             }
         }
 
@@ -70,7 +70,7 @@ public class ChessBoardUnitTest
     {
         // Arrange
         var board = new ChessBoard(); // Start with a standard board
-        var position = (4, 4);
+        var position = new Position(4, 4);
         var newPiece = new Queen(PieceColour.White);
 
         // Ensure the square is empty first
@@ -93,7 +93,7 @@ public class ChessBoardUnitTest
     /// </summary>
     private void AssertPiece(IChessBoard board, (int row, int col) position, Type expectedType, PieceColour expectedColour)
     {
-        var piece = board.GetPiece(position);
+        var piece = board.GetPiece(new Position(position.row, position.col));
         Assert.NotNull(piece);
         Assert.IsType(expectedType, piece);
         Assert.Equal(expectedColour, piece.Colour);

@@ -6,5 +6,5 @@ public interface IChessGame
 {
     PieceColour ToMove { get; }
     GameStatus Status { get; }
-    public MoveResult MakeMove(ChessMove move);
+    public MoveResult MakeMove(Move move);
 }

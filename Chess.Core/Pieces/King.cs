@@ -14,10 +14,10 @@ public class King(PieceColour colour) : ChessPiece(colour)
     /// <param name="move">The move to validate.</param>
     /// <param name="board">The current state of the chessboard.</param>
     /// <returns>True if the move matches a king's movement pattern, otherwise false.</returns>
-    public override bool ValidMove(ChessMove move, IChessBoard board)
+    public override bool ValidMove(Move move, IChessBoard board)
     {
-        var (fromRow, fromCol) = move.From;
-        var (toRow, toCol) = move.To;
+        var (fromRow, fromCol) = move.From.ToTuple();
+        var (toRow, toCol) = move.To.ToTuple();
 
         int rowDiff = Math.Abs(toRow - fromRow);
         int colDiff = Math.Abs(toCol - fromCol);

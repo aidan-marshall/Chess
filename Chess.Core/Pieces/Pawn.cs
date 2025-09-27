@@ -7,14 +7,14 @@ public class Pawn(PieceColour _) : ChessPiece(_)
     /// This method checks for all of a pawn's unique movement patterns but does NOT
     /// validate for check or pins. It relies on the board state for en passant.
     /// </summary>
-    public override bool ValidMove(ChessMove move, IChessBoard board)
+    public override bool ValidMove(Move move, IChessBoard board)
     {
         // Determine pawn direction and starting row based on color.
         int direction = this.Colour == PieceColour.White ? -1 : 1; // White moves from row 6->0, Black from 1->7
         int startRow = this.Colour == PieceColour.White ? 6 : 1;
 
-        var (fromRow, fromCol) = move.From;
-        var (toRow, toCol) = move.To;
+        var (fromRow, fromCol) = move.From.ToTuple();
+        var (toRow, toCol) = move.To.ToTuple();
 
         // --- 1. Forward Moves ---
         if (fromCol == toCol)
@@ -28,9 +28,7 @@ public class Pawn(PieceColour _) : ChessPiece(_)
             // Initial two-square move
             if (fromRow == startRow && toRow == fromRow + 2 * direction && board.GetPiece(move.To) == null)
             {
-                // The path must also be clear (the square being jumped over)
-                var jumpedSquare = (fromRow + direction, fromCol);
-                if (board.GetPiece(jumpedSquare) == null)
+                if (board.GetPiece(new Position(fromRow + direction, fromCol)) == null)
                 {
                     return true;
                 }

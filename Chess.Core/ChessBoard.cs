@@ -6,24 +6,24 @@ public class ChessBoard : IChessBoard
 {
     ChessPiece?[,] IChessBoard.Board { get => Board; }
     public ChessPiece?[,] Board { get; private set; } = new ChessPiece?[8, 8];
-    ChessMove? IChessBoard.LastMove => Moves.LastOrDefault();
-    public List<ChessMove> Moves { get; } = [];
-    public ChessMove? LastMove { get; private set; }
-    public (int, int)? EnPassantTargetSquare { get; set; }
+    Move? IChessBoard.LastMove => Moves.LastOrDefault();
+    public List<Move> Moves { get; } = [];
+    public Move? LastMove { get; private set; }
+    public Position? EnPassantTargetSquare { get; set; }
 
     public ChessBoard()
     {
         Setup();
     }
 
-    public ChessPiece? GetPiece((int row, int col) position)
+    public ChessPiece? GetPiece(Position position)
     {
-        return Board[position.row, position.col];
+        return Board[position.Row, position.Column];
     }
 
-    public void SetPiece((int row, int col) position, ChessPiece? piece)
+    public void SetPiece(Position position, ChessPiece? piece)
     {
-        Board[position.row, position.col] = piece;
+        Board[position.Row, position.Column] = piece;
 
 
     }
@@ -64,16 +64,17 @@ public class ChessBoard : IChessBoard
         Board = new ChessPiece?[8, 8];
     }
 
-    public (int, int) FindKing(PieceColour kingColour)
+    public Position FindKing(PieceColour kingColour)
     {
         for (int r = 0; r < 8; r++)
         {
             for (int c = 0; c < 8; c++)
             {
-                var piece = GetPiece((r, c));
+                var position = new Position(r, c);
+                var piece = GetPiece(position);
                 if (piece is King && piece.Colour == kingColour)
                 {
-                    return (r, c);
+                    return position;
                 }
             }
         }
@@ -81,7 +82,7 @@ public class ChessBoard : IChessBoard
         throw new Exception("King not found on the board.");
     }
 
-    public ChessPiece PerformMove(ChessMove move)
+    public ChessPiece PerformMove(Move move)
     {
         var piece = GetPiece(move.From) ?? throw new InvalidOperationException("No piece at the source square.");
         SetPiece(move.To, piece);
@@ -93,19 +94,19 @@ public class ChessBoard : IChessBoard
         return piece;
     }
 
-    public bool IsSquareAttacked((int, int) attackedPosition, PieceColour attackingColour)
+    public bool IsSquareAttacked(Position attackedPosition, PieceColour attackingColour)
     {
         for (var r = 0; r < 8; r++)
         {
             for (var c = 0; c < 8; c++)
             {
-                var currentPosition = (r, c);
+                var currentPosition = new Position(r, c);
 
                 var piece = GetPiece(currentPosition);
 
                 if (piece == null || piece.Colour != attackingColour) continue;
 
-                var move = new ChessMove((currentPosition), attackedPosition);
+                var move = new Move(currentPosition, attackedPosition);
 
                 if (piece.ValidMove(move, this)) return true;
             }
