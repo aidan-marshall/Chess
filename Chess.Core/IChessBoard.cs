@@ -1,16 +1,13 @@
-using Chess.Core.Pieces;
-
 namespace Chess.Core;
 
-public interface IChessBoard
+internal interface IChessBoard
 {
-    ChessPiece?[,] Board { get; }
     Move? LastMove { get; }
-    public Position? EnPassantTargetSquare { get; set; }
-    ChessPiece? GetPiece(Position position);
-    void SetPiece(Position position, ChessPiece? piece);
+    Position? EnPassantTargetSquare { get; set; }
+    Piece? GetPiece(Position position);
+    void SetPiece(Position position, Piece? piece);
     Position FindKing(PieceColour kingColour);
-    ChessPiece PerformMove(Move move);
+    Piece PerformMove(Move move);
     void Clear();
     bool IsSquareAttacked(Position position, PieceColour attackingColour);
 }

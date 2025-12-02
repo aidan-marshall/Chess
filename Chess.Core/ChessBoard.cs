@@ -1,31 +1,26 @@
-﻿using Chess.Core.Pieces;
+﻿namespace Chess.Core;
 
-namespace Chess.Core;
-
-public class ChessBoard : IChessBoard
+internal class ChessBoard : IChessBoard
 {
-    ChessPiece?[,] IChessBoard.Board { get => Board; }
-    public ChessPiece?[,] Board { get; private set; } = new ChessPiece?[8, 8];
-    Move? IChessBoard.LastMove => Moves.LastOrDefault();
+    private Piece?[,] _board;
     public List<Move> Moves { get; } = [];
-    public Move? LastMove { get; private set; }
+    Move? IChessBoard.LastMove => Moves.LastOrDefault();
     public Position? EnPassantTargetSquare { get; set; }
 
     public ChessBoard()
     {
+        _board = new Piece?[8, 8];
         Setup();
     }
 
-    public ChessPiece? GetPiece(Position position)
+    public Piece? GetPiece(Position position)
     {
-        return Board[position.Row, position.Column];
+        return _board[position.Row, position.Column];
     }
 
-    public void SetPiece(Position position, ChessPiece? piece)
+    public void SetPiece(Position position, Piece? piece)
     {
-        Board[position.Row, position.Column] = piece;
-
-
+        _board[position.Row, position.Column] = piece;
     }
 
     private void Setup()
@@ -35,33 +30,33 @@ public class ChessBoard : IChessBoard
         // Setup black pawns
         for (var col = 0; col < 8; col++)
         {
-            Board[1, col] = new Pawn(PieceColour.Black);
+            _board[1, col] = Piece.Pawn(PieceColour.Black);
         }
 
         SetupBackRank(PieceColour.White);
         // Setup white pawns
         for (var col = 0; col < 8; col++)
         {
-            Board[6, col] = new Pawn(PieceColour.White);
+            _board[6, col] = Piece.Pawn(PieceColour.White);
         }
     }
 
     private void SetupBackRank(PieceColour colour)
     {
         var row = colour == PieceColour.White ? 7 : 0;
-        Board[row, 0] = new Rook(colour);
-        Board[row, 1] = new Knight(colour);
-        Board[row, 2] = new Bishop(colour);
-        Board[row, 3] = new Queen(colour);
-        Board[row, 4] = new King(colour);
-        Board[row, 5] = new Bishop(colour);
-        Board[row, 6] = new Knight(colour);
-        Board[row, 7] = new Rook(colour);
+        _board[row, 0] = Piece.Rook(colour);
+        _board[row, 1] = Piece.Knight(colour);
+        _board[row, 2] = Piece.Bishop(colour);
+        _board[row, 3] = Piece.Queen(colour);
+        _board[row, 4] = Piece.King(colour);
+        _board[row, 5] = Piece.Bishop(colour);
+        _board[row, 6] = Piece.Knight(colour);
+        _board[row, 7] = Piece.Rook(colour);
     }
 
     public void Clear()
     {
-        Board = new ChessPiece?[8, 8];
+        _board = new Piece?[8, 8];
     }
 
     public Position FindKing(PieceColour kingColour)
@@ -72,7 +67,8 @@ public class ChessBoard : IChessBoard
             {
                 var position = new Position(r, c);
                 var piece = GetPiece(position);
-                if (piece is King && piece.Colour == kingColour)
+
+                if (piece?.Type == PieceType.King && piece.Colour == kingColour)
                 {
                     return position;
                 }
@@ -82,13 +78,13 @@ public class ChessBoard : IChessBoard
         throw new Exception("King not found on the board.");
     }
 
-    public ChessPiece PerformMove(Move move)
+    public Piece PerformMove(Move move)
     {
         var piece = GetPiece(move.From) ?? throw new InvalidOperationException("No piece at the source square.");
         SetPiece(move.To, piece);
         SetPiece(move.From, null);
 
-        piece.MovedAmount++;
+        piece.MoveAmount++;
         Moves.Add(move);
 
         return piece;
@@ -108,7 +104,8 @@ public class ChessBoard : IChessBoard
 
                 var move = new Move(currentPosition, attackedPosition);
 
-                if (piece.ValidMove(move, this)) return true;
+                //if (piece.ValidMove(move, this)) return true;
+                return true; // temp
             }
         }
 

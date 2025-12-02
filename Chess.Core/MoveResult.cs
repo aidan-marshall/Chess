@@ -7,5 +7,6 @@ public enum MoveResult
     PlayerOutOfTurn,
     PieceNotFound,
     MoveLeavesKingInCheck,
-    GameOver
+    GameOver,
+    PawnPromotion
 }

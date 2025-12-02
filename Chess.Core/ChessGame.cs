@@ -1,17 +1,26 @@
-using Chess.Core.Pieces;
-
 namespace Chess.Core;
 
-public enum GameStatus { Ongoing, Check, Checkmate, Stalemate }
-public class ChessGame(IChessBoard board) : IChessGame
+public enum GameStatus
+{
+    Ongoing,
+    Check,
+    Checkmate,
+    Stalemate
+}
+
+internal class ChessGame(IChessBoard board) : IChessGame
 {
     public PieceColour ToMove { get; private set; } = PieceColour.White;
+
     public GameStatus Status { get; private set; } = GameStatus.Ongoing;
+
     private readonly IChessBoard _board = board;
 
     public MoveResult MakeMove(Move move)
     {
         var piece = _board.GetPiece(move.From);
+
+        var capturedPiece = _board.GetPiece(move.To);
 
         if (piece == null)
             return MoveResult.PieceNotFound;
@@ -19,79 +28,94 @@ public class ChessGame(IChessBoard board) : IChessGame
         if (piece.Colour != ToMove)
             return MoveResult.PlayerOutOfTurn;
 
-        if (!piece.ValidMove(move, _board))
-        {
+        if (!move.To.IsWithinBounds())
             return MoveResult.IllegalMove;
-        }
 
-        if (!IsMoveFullyLegal(move, piece))
+        //if (!piece.ValidMove(move, _board))
+        //    return MoveResult.IllegalMove;
+
+        //if (!IsCastleLegal(move, piece))
+        //    return MoveResult.IllegalMove;
+
+        if (IsKingInCheck(move))
             return MoveResult.MoveLeavesKingInCheck;
+
 
         return MoveResult.Success;
     }
 
-    private bool IsMoveFullyLegal(Move move, ChessPiece piece)
-    {
-        if (piece is King king && Math.Abs(move.To.Column - move.From.Column) == 2)
-            return IsCastleLegal(move, king);
-
-        return IsKingInCheck(move);
-    }
-
     private bool IsKingInCheck(Move move)
     {
-        throw new NotImplementedException();
+        var piece = _board.GetPiece(move.From);
+        var capturedPiece = _board.GetPiece(move.To);
+
+        _board.PerformMove(move);
+
+        var kingPosition = _board.FindKing(ToMove);
+
+        var isInCheck = _board.IsSquareAttacked(kingPosition, ToMove.Opposite());
+
+        _board.PerformMove(new Move(move.To, move.From));
+        if (capturedPiece != null)
+        {
+            _board.SetPiece(move.To, capturedPiece);
+        }
+
+        return isInCheck;
     }
 
-    private bool IsCastleLegal(Move move, King king)
-    {
-        var rowDiff = Math.Abs(move.To.Row - move.From.Row);
-        var colDiff = Math.Abs(move.To.Column - move.From.Column);
+    //private bool IsCastleLegal(Move move, ChessPiece piece)
+    //{
+    //    if (!(piece is King king && Math.Abs(move.To.Column - move.From.Column) == 2))
+    //        return true;
 
-        var isCastlePattern = rowDiff == 0 && colDiff == 2;
+    //    var rowDiff = Math.Abs(move.To.Row - move.From.Row);
+    //    var colDiff = Math.Abs(move.To.Column - move.From.Column);
 
-        if (!isCastlePattern)
-        {
-            return false;
-        }
+    //    var isCastlePattern = rowDiff == 0 && colDiff == 2;
 
-        if (king.HasMoved)
-        {
-            return false;
-        }
+    //    if (!isCastlePattern)
+    //    {
+    //        return false;
+    //    }
 
-        // Determine which rook to try and fetch
-        var isQueenSide = king.Colour == PieceColour.White
-            ? move.To.Column < move.From.Column
-            : move.To.Column > move.From.Column;
+    //    if (king.HasMoved)
+    //    {
+    //        return false;
+    //    }
 
-        var rowToFetch = king.Colour == PieceColour.White ? 7 : 0;
-        var colToFetch = isQueenSide ? 0 : 7;
+    //    // Determine which rook to try and fetch
+    //    var isQueenSide = king.Colour == PieceColour.White
+    //        ? move.To.Column < move.From.Column
+    //        : move.To.Column > move.From.Column;
 
-        var rookStartingPosition = new Position(rowToFetch, colToFetch);
+    //    var rowToFetch = king.Colour == PieceColour.White ? 7 : 0;
+    //    var colToFetch = isQueenSide ? 0 : 7;
 
-        var rookCastling = _board.GetPiece(rookStartingPosition);
+    //    var rookStartingPosition = new Position(rowToFetch, colToFetch);
 
-        if (rookCastling is not Rook rook) return false;
+    //    var rookCastling = _board.GetPiece(rookStartingPosition);
 
-        if (rook.Colour != king.Colour) return false;
+    //    if (rookCastling is not Rook rook) return false;
 
-        if (rook.HasMoved) return false;
+    //    if (rook.Colour != king.Colour) return false;
 
-        var step = isQueenSide ? -1 : 1;
+    //    if (rook.HasMoved) return false;
 
-        // determine if path is clear
-        for (var col = move.From.Column + step; col != colToFetch + step; col += step)
-        {
-            var position = new Position(move.From.Row, col);
+    //    var step = isQueenSide ? -1 : 1;
 
-            if (_board.GetPiece(position) is not null)
-                return false;
+    //    // determine if path is clear
+    //    for (var col = move.From.Column + step; col != colToFetch + step; col += step)
+    //    {
+    //        var position = new Position(move.From.Row, col);
 
-            if (col != colToFetch && _board.IsSquareAttacked(position, king.Colour.Opposite()))
-                return false ;
-        }
+    //        if (_board.GetPiece(position) is not null)
+    //            return false;
 
-        return true;
-    }
+    //        if (col != colToFetch && _board.IsSquareAttacked(position, king.Colour.Opposite()))
+    //            return false ;
+    //    }
+
+    //    return true;
+    //}
 }
