@@ -1,4 +1,4 @@
-﻿namespace Chess.Core;
+﻿namespace Chess.Engine;
 
 public static class Extensions
 {

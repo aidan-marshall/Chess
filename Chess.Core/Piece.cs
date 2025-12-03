@@ -1,4 +1,4 @@
-﻿namespace Chess.Core;
+﻿namespace Chess.Engine;
 
 internal sealed class Piece(PieceType type, PieceColour colour)
 {

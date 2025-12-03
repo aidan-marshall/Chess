@@ -1,4 +1,4 @@
-﻿namespace Chess.Core;
+﻿namespace Chess.Engine;
 
 internal class ChessBoard : IChessBoard
 {

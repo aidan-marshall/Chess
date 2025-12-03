@@ -1,4 +1,4 @@
-﻿namespace Chess.Core.Validation;
+﻿namespace Chess.Engine.Validation;
 
 internal static class MovementPatternValidator
 {

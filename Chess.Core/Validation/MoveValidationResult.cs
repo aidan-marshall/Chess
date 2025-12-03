@@ -1,4 +1,4 @@
-﻿namespace Chess.Core.Validation;
+﻿namespace Chess.Engine.Validation;
 
 internal readonly record struct MoveValidationResult(bool IsValid, string? ErrorMessage)
 {

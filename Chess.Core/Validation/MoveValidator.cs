@@ -1,4 +1,4 @@
-﻿namespace Chess.Core.Validation;
+﻿namespace Chess.Engine.Validation;
 
 internal sealed class MoveValidator
 {

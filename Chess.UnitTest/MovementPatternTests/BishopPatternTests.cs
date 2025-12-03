@@ -1,6 +1,7 @@
-﻿using Chess.Core.Validation;
+﻿using Chess.Engine;
+using Chess.Engine.Validation;
 
-namespace Chess.Core.UnitTest.MovementPatternTests;
+namespace Chess.Engine.UnitTest.MovementPatternTests;
 
 public class BishopPatternTests
 {

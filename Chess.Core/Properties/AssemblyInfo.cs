@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Chess.Core.UnitTest")]
+[assembly: InternalsVisibleTo("Chess.Engine.UnitTest")]

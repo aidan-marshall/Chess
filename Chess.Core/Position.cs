@@ -1,4 +1,4 @@
-﻿namespace Chess.Core;
+﻿namespace Chess.Engine;
 
 internal readonly record struct Position(int Row, int column)
 {
