@@ -2,43 +2,48 @@
 
 internal static class MovementPatternValidator
 {
-    internal static bool MatchesMovementPattern(Piece piece, Move move)
+    internal static (bool Matches, SpecialMoveType SpecialMoveType) MatchesMovementPattern(Piece piece, Move move)
     {
         return piece.Type switch
         {
             PieceType.Pawn => PawnPattern(move, piece.Colour),
-            PieceType.Rook => RookPattern(move),
-            PieceType.Knight => KnightPattern(move),
-            PieceType.Bishop => BishopPattern(move),
-            PieceType.Queen => QueenPattern(move),
+            PieceType.Rook => (RookPattern(move), SpecialMoveType.None),
+            PieceType.Knight => (KnightPattern(move), SpecialMoveType.None),
+            PieceType.Bishop => (BishopPattern(move), SpecialMoveType.None),
+            PieceType.Queen => (QueenPattern(move), SpecialMoveType.None),
             PieceType.King => KingPattern(move),
-            _ => false,
+            _ => throw new ApplicationException("Piece type does not exist"),
         };
     }
 
-    private static bool PawnPattern(Move move, PieceColour colour)
+    private static (bool Matches, SpecialMoveType SpecialMoveType) PawnPattern(Move move, PieceColour colour)
     {
         var direction = colour.Direction();
 
-        if (move.ColDiff == 0)
-        {
-            if (move.RowDiff == direction)
-                return true;
+        var isSingleStep = move.ColDiff == 0 && move.RowDiff == direction;
 
-            if (move.From.Row == colour.StartingRow()
-                && move.RowDiff == 2 * direction)
-                return true;
+        var isDoubleStep = move.ColDiff == 0
+                            && move.From.Row == colour.StartingRank()
+                            && move.RowDiff == 2 * direction;
 
-            return false;
-        }
+        var isCapture = Math.Abs(move.ColDiff) == 1 && move.RowDiff == direction;
 
-        if (Math.Abs(move.ColDiff) == 1 && move.RowDiff == direction)
-        {
-            return true;
-        }
+        // Promotion pattern = single-step or capture forward into last rank
+        var isPromotion = (isSingleStep || isCapture) &&
+                           move.To.Row == colour.PromotionRank();
 
-        return false;
+        if (isPromotion)
+            return (true, SpecialMoveType.Promotion);
+
+        if (isCapture)
+            return (true, SpecialMoveType.Capture);
+
+        if (isSingleStep || isDoubleStep)
+            return (true, SpecialMoveType.None);
+
+        return (false, SpecialMoveType.None);
     }
+
 
     private static bool RookPattern(Move move)
     {
@@ -74,19 +79,24 @@ internal static class MovementPatternValidator
         return BishopPattern(move) || RookPattern(move);
     }
 
-    private static bool KingPattern(Move move)
+    private static (bool Matches, SpecialMoveType SpecialMoveType) KingPattern(Move move)
     {
         var rowAbs = Math.Abs(move.RowDiff);
         var colAbs = Math.Abs(move.ColDiff);
 
-        // Standard 1-square move
+        // Standard move: one square any direction
         if (rowAbs <= 1 && colAbs <= 1 && (rowAbs != 0 || colAbs != 0))
-            return true;
+            return (true, SpecialMoveType.None);
 
-        // Castling pattern
+        // Castling geometry
         if (rowAbs == 0 && colAbs == 2)
-            return true;
+        {
+            if (move.ColDiff > 0)
+                return (true, SpecialMoveType.CastleKingSide);
+            else
+                return (true, SpecialMoveType.CastleQueenSide);
+        }
 
-        return false;
+        return (false, SpecialMoveType.None);
     }
 }

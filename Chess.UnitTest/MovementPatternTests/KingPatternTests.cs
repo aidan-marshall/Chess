@@ -1,5 +1,4 @@
-﻿using Chess.Engine;
-using Chess.Engine.Validation;
+﻿using Chess.Engine.Validation;
 
 namespace Chess.Engine.UnitTest.MovementPatternTests;
 
@@ -16,7 +15,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -30,7 +30,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -44,7 +45,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -58,7 +60,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -72,7 +75,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -86,7 +90,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -100,7 +105,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -114,11 +120,12 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
-    public void King_CastleRight_IsValidPattern()
+    public void King_CastleRight_IsValid()
     {
         // Arrange
         var piece = Piece.King(PieceColour.White);
@@ -128,11 +135,12 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.CastleKingSide, result.SpecialMoveType);
     }
 
     [Fact]
-    public void King_CastleLeft_IsValidPattern()
+    public void King_CastleLeft_IsValid()
     {
         // Arrange
         var piece = Piece.King(PieceColour.White);
@@ -142,7 +150,8 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.CastleQueenSide, result.SpecialMoveType);
     }
 
     [Fact]
@@ -156,11 +165,11 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Matches);
     }
 
     [Fact]
-    public void King_TwoSquaresRight_NotCastlingRank_IsInvalid()
+    public void King_TwoSquaresRight_IsValid()
     {
         // Arrange
         var piece = Piece.King(PieceColour.White);
@@ -170,7 +179,7 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
     }
 
     [Fact]
@@ -184,7 +193,7 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Matches);
     }
 
     [Fact]
@@ -198,7 +207,7 @@ public class KingPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Matches);
     }
 
 }

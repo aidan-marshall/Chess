@@ -6,5 +6,7 @@ public static class Extensions
 
     public static int Direction(this PieceColour colour) => colour == PieceColour.White ? -1 : 1;
 
-    public static int StartingRow(this PieceColour colour) => colour == PieceColour.White ? 6 : 1;
+    public static int StartingRank(this PieceColour colour) => colour == PieceColour.White ? 6 : 1;
+
+    public static int PromotionRank(this PieceColour colour) => colour == PieceColour.White ? 0 : 7;
 }

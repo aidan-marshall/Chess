@@ -1,5 +1,4 @@
-﻿using Chess.Engine;
-using Chess.Engine.Validation;
+﻿using Chess.Engine.Validation;
 
 namespace Chess.Engine.UnitTest.MovementPatternTests;
 
@@ -16,7 +15,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -30,7 +30,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -44,7 +45,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -58,7 +60,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -72,7 +75,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -86,7 +90,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -100,7 +105,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -114,7 +120,8 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 
     [Fact]
@@ -128,6 +135,7 @@ public class RookPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Matches);
+        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
     }
 }

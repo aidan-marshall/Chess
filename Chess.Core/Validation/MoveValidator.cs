@@ -2,16 +2,33 @@
 
 internal sealed class MoveValidator
 {
-    public MoveValidationResult Validate(Move move, IChessBoard board)
+    public static MoveValidationResult Validate(Move move, IChessBoard board, PieceColour toMove)
     {
-        var piece = board.GetPiece(move.From);
+        var movingPiece = board.GetPiece(move.From);
 
-        if (piece == null)
-            return MoveValidationResult.Invalid("No piece at the source position.");
+        if (movingPiece == null)
+            return MoveValidationResult.Illegal();
 
-        if (!MovementPatternValidator.MatchesMovementPattern(piece, move))
-            return  MoveValidationResult.Invalid("The piece cannot move in that pattern.");
+        if (movingPiece.Colour != toMove)
+            return MoveValidationResult.Illegal();
 
-        return MoveValidationResult.Valid();
+        var capturedPiece = board.GetPiece(move.To);
+
+        if (capturedPiece is not null && capturedPiece.Colour == movingPiece.Colour)
+            return MoveValidationResult.Illegal();
+
+        if (!move.To.IsWithinBounds())
+            return MoveValidationResult.Illegal();
+
+        if (!MovementPatternValidator.MatchesMovementPattern(movingPiece, move).Matches)
+            return MoveValidationResult.Illegal();
+
+
+
+
+
+
+
+        return MoveValidationResult.LegalNormal();
     }
 }

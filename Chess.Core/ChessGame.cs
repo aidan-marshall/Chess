@@ -16,20 +16,20 @@ internal class ChessGame(IChessBoard board) : IChessGame
 
     private readonly IChessBoard _board = board;
 
-    public MoveResult MakeMove(Move move)
+    public bool MakeMove(Move move)
     {
         var piece = _board.GetPiece(move.From);
 
         var capturedPiece = _board.GetPiece(move.To);
 
-        if (piece == null)
-            return MoveResult.PieceNotFound;
+        //if (piece == null)
+        //    return MoveResultAction.PieceNotFound;
 
-        if (piece.Colour != ToMove)
-            return MoveResult.PlayerOutOfTurn;
+        //if (piece.Colour != ToMove)
+        //    return MoveResultAction.PlayerOutOfTurn;
 
-        if (!move.To.IsWithinBounds())
-            return MoveResult.IllegalMove;
+        //if (!move.To.IsWithinBounds())
+        //    return MoveResultAction.IllegalMove;
 
         //if (!piece.ValidMove(move, _board))
         //    return MoveResult.IllegalMove;
@@ -37,11 +37,12 @@ internal class ChessGame(IChessBoard board) : IChessGame
         //if (!IsCastleLegal(move, piece))
         //    return MoveResult.IllegalMove;
 
-        if (IsKingInCheck(move))
-            return MoveResult.MoveLeavesKingInCheck;
+        //if (IsKingInCheck(move))
+        //    return MoveResultAction.MoveLeavesKingInCheck;
 
 
-        return MoveResult.Success;
+        //return MoveResultAction.Success;
+        return true;
     }
 
     private bool IsKingInCheck(Move move)
