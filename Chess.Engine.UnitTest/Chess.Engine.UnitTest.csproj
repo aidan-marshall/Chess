@@ -16,11 +16,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="Xunit" />
+      <ProjectReference Include="..\Chess.Engine\Chess.Engine.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Chess.Core\Chess.Engine.csproj" />
+        <Using Include="Xunit" />
     </ItemGroup>
 
 </Project>

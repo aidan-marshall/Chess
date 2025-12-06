@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11018.127
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.Engine", "Chess.Core\Chess.Engine.csproj", "{CB107F16-7AC1-4E12-A3D0-195B2CEEDACB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.Engine", "Chess.Engine\Chess.Engine.csproj", "{CB107F16-7AC1-4E12-A3D0-195B2CEEDACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.Engine.UnitTest", "Chess.UnitTest\Chess.Engine.UnitTest.csproj", "{F0763B28-30E9-490A-BD2F-D6D78683C316}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chess.Engine.UnitTest", "Chess.Engine.UnitTest\Chess.Engine.UnitTest.csproj", "{F0763B28-30E9-490A-BD2F-D6D78683C316}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

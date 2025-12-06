@@ -15,8 +15,7 @@ public class BishopPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -30,8 +29,7 @@ public class BishopPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -45,8 +43,7 @@ public class BishopPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -60,8 +57,7 @@ public class BishopPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -75,8 +71,7 @@ public class BishopPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.None, result);
     }
 
     [Fact]
@@ -90,8 +85,7 @@ public class BishopPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.None, result);
     }
 
     [Fact]
@@ -105,8 +99,7 @@ public class BishopPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.None, result);
     }
 
     [Fact]
@@ -114,13 +107,12 @@ public class BishopPatternTests
     {
         // Arrange
         var piece = Piece.Bishop(PieceColour.White);
-        var move = Move.Of(4, 4, 5, 6); // Not a valid diagonal
+        var move = Move.Of(4, 4, 5, 6); // Not a diagonal
 
         // Act
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.None, result);
     }
 }

@@ -20,7 +20,9 @@ internal sealed class MoveValidator
         if (!move.To.IsWithinBounds())
             return MoveValidationResult.Illegal();
 
-        if (!MovementPatternValidator.MatchesMovementPattern(movingPiece, move).Matches)
+        var movementPatternResult = MovementPatternValidator.MatchesMovementPattern(movingPiece, move);
+
+        if (movementPatternResult == MovementPatternType.None)
             return MoveValidationResult.Illegal();
 
 

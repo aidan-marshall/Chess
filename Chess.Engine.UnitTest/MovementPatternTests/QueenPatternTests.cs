@@ -10,13 +10,12 @@ public class QueenPatternTests
         // Arrange
         var piece = Piece.Queen(PieceColour.White);
         var move = Move.Of(4, 4, 3, 4);
-
+    
         // Act
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -30,8 +29,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -45,8 +43,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -60,8 +57,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -75,8 +71,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -90,8 +85,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -105,8 +99,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -120,8 +113,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -135,8 +127,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -150,8 +141,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -165,8 +155,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.True(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.Normal, result);
     }
 
     [Fact]
@@ -180,8 +169,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.None, result);
     }
 
     [Fact]
@@ -195,8 +183,7 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.None, result);
     }
 
     [Fact]
@@ -210,7 +197,6 @@ public class QueenPatternTests
         var result = MovementPatternValidator.MatchesMovementPattern(piece, move);
 
         // Assert
-        Assert.False(result.Matches);
-        Assert.Equal(SpecialMoveType.None, result.SpecialMoveType);
+        Assert.Equal(MovementPatternType.None, result);
     }
 }
