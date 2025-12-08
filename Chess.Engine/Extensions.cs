@@ -1,6 +1,8 @@
-﻿namespace Chess.Engine;
+﻿using Chess.Engine.Validation;
 
-public static class Extensions
+namespace Chess.Engine;
+
+internal static class Extensions
 {
     public static PieceColour Opposite(this PieceColour colour) => colour == PieceColour.White ? PieceColour.Black : PieceColour.White;
 
