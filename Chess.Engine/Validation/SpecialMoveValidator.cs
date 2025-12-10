@@ -3,7 +3,7 @@
 internal class SpecialMoveValidator
 {
 
-    public static (bool IsLegal, SpecialMoveType SpecialMoveType) Validate(
+    public static MoveValidationResult Validate(
         MovementPatternType movementPattern,
         IChessBoard board,
         Piece movingPiece,
@@ -12,17 +12,17 @@ internal class SpecialMoveValidator
     {
         return movementPattern switch
         {
-            MovementPatternType.Normal => (true, SpecialMoveType.None),
+            MovementPatternType.Normal => MoveValidationResult.LegalNormal(),
             MovementPatternType.PawnCapture => PawnCapture(movingPiece, targetPiece, board, move),
             MovementPatternType.PawnDoubleStep => PawnDoubleStep(movingPiece, targetPiece),
             MovementPatternType.PawnPromotion => PawnPromotion(movingPiece, targetPiece, move),
-            MovementPatternType.CastleKingSide => Castle(true),
-            MovementPatternType.CastleQueenSide => Castle(false),
-            _ => (false, SpecialMoveType.None)
+            MovementPatternType.CastleKingSide => Castle(true, movingPiece, board),
+            MovementPatternType.CastleQueenSide => Castle(false, movingPiece, board),
+            _ => MoveValidationResult.Illegal()
         };
     }
 
-    private static (bool IsLegal, SpecialMoveType SpecialMoveType) PawnCapture(
+    private static MoveValidationResult PawnCapture(
         Piece movingPiece,
         Piece? targetPiece,
         IChessBoard board,
@@ -38,19 +38,19 @@ internal class SpecialMoveValidator
         }
         
         if (targetPiece.Colour == movingPiece.Colour)
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
-        return (true, SpecialMoveType.Capture);
+        return MoveValidationResult.LegalCapture(move.To);
     }
 
-    private static (bool IsLegal, SpecialMoveType SpecialMoveType) PawnDoubleStep(Piece movingPiece, Piece? targetPiece)
+    private static MoveValidationResult PawnDoubleStep(Piece movingPiece, Piece? targetPiece)
     {
         var isLegal = targetPiece is null && !movingPiece.HasMoved;
 
-        return (isLegal, SpecialMoveType.None);
+        return isLegal ? MoveValidationResult.LegalNormal() : MoveValidationResult.Illegal();
     }
 
-    private static (bool IsLegal, SpecialMoveType SpecialMoveType) PawnPromotion(
+    private static MoveValidationResult PawnPromotion(
         Piece movingPiece,
         Piece? targetPiece,
         Move move)
@@ -62,65 +62,76 @@ internal class SpecialMoveValidator
         var isCapture = Math.Abs(move.ColDiff) == 1 && move.RowDiff == direction;
 
         if (!isSingleStep && !isCapture)
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
         // Single-step promotion must land on empty square
         if (isSingleStep && targetPiece != null)
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
         // Capture promotion must capture enemy piece
         if (isCapture && (targetPiece == null || targetPiece.Colour == movingPiece.Colour))
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
-        return (true, SpecialMoveType.Promotion);
+        return MoveValidationResult.LegalPromotion();
     }
 
-    private static (bool IsLegal, SpecialMoveType SpecialMoveType) Castle(bool isKingSide, Piece movingPiece)
+    private static MoveValidationResult Castle(bool isKingSide, Piece king, IChessBoard board)
     {
-        if (movingPiece.Type != PieceType.King)
-            return (false, SpecialMoveType.None);
+        if (king.Type != PieceType.King)
+            return MoveValidationResult.Illegal();
 
-        var colour = movingPiece.Colour;
-        var enemyColor = colour.Opposite();
+        if (king.HasMoved)
+            return MoveValidationResult.Illegal();
 
-        if (movingPiece.HasMoved)
-            return (false, SpecialMoveType.None);
-        
+        var positionOfRook = isKingSide
+            ? Position.Of(king.Colour.HomeRank(), 7)
+            : Position.Of(king.Colour.HomeRank(), 0);
 
+        var rook = board.GetPiece(positionOfRook);
 
+        if (rook is null ||
+            rook.Type is not PieceType.Rook ||
+            rook.Colour != king.Colour ||
+            rook.HasMoved)
+            return MoveValidationResult.Illegal();
 
-        return (false, SpecialMoveType.None);
+        var rookTargetColumn = isKingSide ? 5 : 3;
+
+        var rookTargetMove = Move.Of(
+            from: positionOfRook,
+            to: Position.Of(king.Colour.HomeRank(), rookTargetColumn));
+
+        return MoveValidationResult.LegalCastling(rookTargetMove, isKingSide);
     }
 
-
-
-    private static (bool IsLegal, SpecialMoveType SpecialMoveType) EnPassant(
+    private static MoveValidationResult EnPassant(
         Piece movingPiece,
         IChessBoard board,
         Move move)
     {
         if (!board.EnPassantTargetSquare.HasValue)
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
         var direction = movingPiece.Colour.Direction();
         var enpassantPiecePosition = board.EnPassantTargetSquare.Value;
 
         // Is this an EnPassant pattern?
         if (!(Math.Abs(move.ColDiff) == 1 && move.RowDiff == direction))
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
         // Is this EnPassant move valid ?
         if (move.To != enpassantPiecePosition)
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
-        var enpassantPiece = board.GetPiece(Position.Of(enpassantPiecePosition.Row - direction, enpassantPiecePosition.Column));
+        var capturedPawnPosition = Position.Of(enpassantPiecePosition.Row - direction, enpassantPiecePosition.Column);
+
+        var enpassantPiece = board.GetPiece(capturedPawnPosition);
 
         if (enpassantPiece is null ||
             enpassantPiece.Type != PieceType.Pawn ||
             enpassantPiece.Colour == movingPiece.Colour)
-            return (false, SpecialMoveType.None);
+            return MoveValidationResult.Illegal();
 
-        // Implement En Passant validation logic here
-        return (true, SpecialMoveType.EnPassant);
+        return MoveValidationResult.LegalEnPassant(capturedPawnPosition);
     }
 }

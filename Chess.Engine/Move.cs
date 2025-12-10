@@ -13,4 +13,9 @@ internal readonly record struct Move(Position From, Position To)
             new Position(fromRow, fromCol),
             new Position(toRow, toCol)
         );
+
+    public static Move Of(Position from, Position to)
+    {
+        return new Move(from, to);
+    }
 }

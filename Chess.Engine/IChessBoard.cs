@@ -10,4 +10,5 @@ internal interface IChessBoard
     Piece PerformMove(Move move);
     void Clear();
     bool IsSquareAttacked(Position position, PieceColour attackingColour);
+    bool IsPathClear(Move move);
 }

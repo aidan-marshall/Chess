@@ -22,18 +22,25 @@ internal sealed class MoveValidator
         if (movementPattern == MovementPatternType.None)
             return MoveValidationResult.Illegal();
 
+        var specialMoveResult = SpecialMoveValidator.Validate(movementPattern, board, movingPiece, targetPiece, move);
 
+        if (!specialMoveResult.IsLegal)
+            return MoveValidationResult.Illegal();
 
+        if (!MovePathIsClear(move, board, movementPattern, movingPiece, specialMoveResult.CastlingRookMove?.To))
+            return MoveValidationResult.Illegal();
 
-
-
-
-
+        // TODO: Check if king is left in check after the move
 
         return MoveValidationResult.LegalNormal();
     }
 
-    private static bool DetermineIfPathClear(Move move, IChessBoard board, MovementPatternType pattern, Piece movingPiece)
+    private static bool MovePathIsClear(
+        Move move,
+        IChessBoard board,
+        MovementPatternType pattern,
+        Piece movingPiece,
+        Position? rookCastlePosition)
     {
         return pattern switch
         {
@@ -42,9 +49,38 @@ internal sealed class MoveValidator
             MovementPatternType.PawnDoubleStep
                 => IsPathClear(move, board),
             MovementPatternType.CastleKingSide or MovementPatternType.CastleQueenSide
-                => IsPathClear(move, board),
+                => IsCastlePathClear(move, rookCastlePosition, board, movingPiece),
             _ => true,
         };
+    }
+
+    private static bool IsCastlePathClear(Move kingMove, Position? rookPosition, IChessBoard board, Piece king)
+    {
+        if (!rookPosition.HasValue)
+            throw new ApplicationException("Rook position must be provided for castling validation.");
+
+        var kingToRook = Move.Of(kingMove.From, rookPosition.Value);
+
+        if (!IsPathClear(kingToRook, board))
+            return false;
+
+        var attackingColour = king.Colour.Opposite();
+
+        if (board.IsSquareAttacked(kingMove.From, attackingColour))
+            return false;
+
+        var direction = Math.Sign(kingMove.ColDiff);
+
+        var step1 = Position.Of(kingMove.From.Row, kingMove.From.Column + direction);
+        var step2 = Position.Of(kingMove.From.Row, kingMove.From.Column + 2 * direction);
+
+        if (board.IsSquareAttacked(step1, attackingColour))
+            return false;
+
+        if (board.IsSquareAttacked(step2, attackingColour))
+            return false;
+
+        return true;
     }
 
     private static bool IsPathClear(Move move, IChessBoard board)

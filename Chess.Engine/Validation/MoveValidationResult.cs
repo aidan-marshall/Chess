@@ -3,13 +3,13 @@
 internal sealed record MoveValidationResult(
     bool IsLegal,
     SpecialMoveType SpecialMoveType = SpecialMoveType.None,
-    Position? EnPassantCapturedPawn = null,
+    Position? CapturedPawn = null,
     Move? CastlingRookMove = null
     )
 {
     public bool IsLegal { get; } = IsLegal;
     public SpecialMoveType SpecialMoveType { get; } = SpecialMoveType;
-    public Position? EnPassantCapturedPawn { get; } = EnPassantCapturedPawn;
+    public Position? EnPassantCapturedPawn { get; } = CapturedPawn;
     public Move? CastlingRookMove { get; } = CastlingRookMove;
 
     public static MoveValidationResult Illegal()
@@ -17,6 +17,9 @@ internal sealed record MoveValidationResult(
 
     public static MoveValidationResult LegalNormal()
         => new(true);
+
+    public static MoveValidationResult LegalCapture(Position capturedPawn)
+        => new(true, SpecialMoveType.Capture, capturedPawn);
 
     public static MoveValidationResult LegalPromotion()
         => new(false, SpecialMoveType.Promotion);
