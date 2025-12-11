@@ -1,4 +1,4 @@
-﻿namespace Chess.Engine;
+﻿namespace Chess.Engine.Pieces;
 
 internal enum PieceType
 {

@@ -1,11 +1,16 @@
-﻿namespace Chess.Engine;
+﻿namespace Chess.Engine.Pieces;
 
-internal sealed class Piece(PieceType type, PieceColour colour)
+internal sealed class Piece(PieceType type, PieceColour colour, int moveAmount = 0)
 {
     public PieceType Type { get; } = type;
     public PieceColour Colour { get; } = colour;
-    public int MoveAmount { get; set; }
+    public int MoveAmount { get; set; } = moveAmount;
     public bool HasMoved => MoveAmount > 0;
+
+    public Piece Clone()
+    {
+        return new Piece(this.Type, this.Colour, this.MoveAmount);
+    }
 
     public static Piece Pawn(PieceColour colour) => new(PieceType.Pawn, colour);
 

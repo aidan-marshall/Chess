@@ -1,16 +1,26 @@
-﻿namespace Chess.Engine;
+﻿using Chess.Engine.Helpers;
+using Chess.Engine.Moves;
+using Chess.Engine.Pieces;
+
+namespace Chess.Engine;
 
 internal class ChessBoard : IChessBoard
 {
     private Piece?[,] _board;
     public List<Move> Moves { get; } = [];
-    Move? IChessBoard.LastMove => Moves.LastOrDefault();
     public Position? EnPassantTargetSquare { get; set; }
 
     public ChessBoard()
     {
         _board = new Piece?[8, 8];
         Setup();
+    }
+
+    public ChessBoard(Piece?[,] board, Position? enPassantTargetSquare, List<Move> moves)
+    {
+        _board = board;
+        Moves = moves;
+        EnPassantTargetSquare = enPassantTargetSquare;
     }
 
     public Piece? GetPiece(Position position)
@@ -81,6 +91,7 @@ internal class ChessBoard : IChessBoard
     public Piece PerformMove(Move move)
     {
         var piece = GetPiece(move.From) ?? throw new InvalidOperationException("No piece at the source square.");
+
         SetPiece(move.To, piece);
         SetPiece(move.From, null);
 
@@ -197,5 +208,26 @@ internal class ChessBoard : IChessBoard
         var direction = piece.Colour.Direction();
 
         return rowDiff == direction && Math.Abs(colDiff) == 1;
+    }
+
+    /// <summary>
+    ///  A clone of the current chess board.
+    /// </summary>
+    /// <returns>The implementation of this IChessBoard</returns>
+    public IChessBoard Clone()
+    {
+        var newBoard = new Piece?[8, 8];
+
+        for (int r = 0; r < 8; r++)
+        {
+            for (int c = 0; c < 8; c++)
+            {
+                newBoard[r, c] = _board[r, c]?.Clone();
+            }
+        }
+
+        var newMoves = new List<Move>(Moves);
+
+        return new ChessBoard(newBoard, EnPassantTargetSquare, newMoves);
     }
 }

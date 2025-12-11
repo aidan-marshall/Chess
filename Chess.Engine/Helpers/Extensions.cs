@@ -1,6 +1,7 @@
-﻿using Chess.Engine.Validation;
+﻿using Chess.Engine.Pieces;
+using Chess.Engine.Validation;
 
-namespace Chess.Engine;
+namespace Chess.Engine.Helpers;
 
 internal static class Extensions
 {

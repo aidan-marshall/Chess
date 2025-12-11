@@ -1,4 +1,8 @@
-﻿namespace Chess.Engine.Validation;
+﻿using Chess.Engine.Helpers;
+using Chess.Engine.Moves;
+using Chess.Engine.Pieces;
+
+namespace Chess.Engine.Validation;
 
 internal sealed class MoveValidator
 {
@@ -30,9 +34,30 @@ internal sealed class MoveValidator
         if (!MovePathIsClear(move, board, movementPattern, movingPiece, specialMoveResult.CastlingRookMove?.To))
             return MoveValidationResult.Illegal();
 
-        // TODO: Check if king is left in check after the move
+        if (MoveLeavesKingInCheck(move, board, movingPiece.Colour))
+            return MoveValidationResult.Illegal();
 
         return MoveValidationResult.LegalNormal();
+    }
+
+    private static bool IsKingInCheck(
+        IChessBoard board,
+        PieceColour kingColour)
+    {
+        var kingPosition = board.FindKing(kingColour);
+        return board.IsSquareAttacked(kingPosition, kingColour.Opposite());
+    }
+
+    private static bool MoveLeavesKingInCheck(
+        Move move,
+        IChessBoard board,
+        PieceColour movingColour)
+    {
+        var simulatedBoard = board.Clone();
+
+        MoveService.ExecuteMove(simulatedBoard, move);
+
+        return IsKingInCheck(simulatedBoard, movingColour);
     }
 
     private static bool MovePathIsClear(
@@ -59,20 +84,21 @@ internal sealed class MoveValidator
         if (!rookPosition.HasValue)
             throw new ApplicationException("Rook position must be provided for castling validation.");
 
+        if (IsKingInCheck(board, king.Colour))
+            return false;
+
         var kingToRook = Move.Of(kingMove.From, rookPosition.Value);
 
         if (!IsPathClear(kingToRook, board))
             return false;
 
-        var attackingColour = king.Colour.Opposite();
-
-        if (board.IsSquareAttacked(kingMove.From, attackingColour))
-            return false;
 
         var direction = Math.Sign(kingMove.ColDiff);
 
         var step1 = Position.Of(kingMove.From.Row, kingMove.From.Column + direction);
         var step2 = Position.Of(kingMove.From.Row, kingMove.From.Column + 2 * direction);
+
+        var attackingColour = king.Colour.Opposite();
 
         if (board.IsSquareAttacked(step1, attackingColour))
             return false;
@@ -91,7 +117,7 @@ internal sealed class MoveValidator
         var currentRow = move.From.Row + rowStep;
         var currentCol = move.From.Column + colStep;
 
-        while (currentRow != move.To.Row || currentRow != move.To.Column)
+        while (currentRow != move.To.Row || currentCol != move.To.Column)
         {
             var currentPosition = Position.Of(currentRow, currentCol);
 

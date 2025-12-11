@@ -1,4 +1,6 @@
-﻿namespace Chess.Engine.Validation;
+﻿using Chess.Engine.Moves;
+
+namespace Chess.Engine.Validation;
 
 internal sealed record MoveValidationResult(
     bool IsLegal,

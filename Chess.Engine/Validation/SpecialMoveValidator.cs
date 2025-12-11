@@ -1,4 +1,8 @@
-﻿namespace Chess.Engine.Validation;
+﻿using Chess.Engine.Helpers;
+using Chess.Engine.Moves;
+using Chess.Engine.Pieces;
+
+namespace Chess.Engine.Validation;
 
 internal class SpecialMoveValidator
 {

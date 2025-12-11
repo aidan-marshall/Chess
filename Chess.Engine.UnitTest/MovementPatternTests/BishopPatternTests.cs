@@ -1,4 +1,6 @@
-﻿using Chess.Engine.Validation;
+﻿using Chess.Engine.Moves;
+using Chess.Engine.Pieces;
+using Chess.Engine.Validation;
 
 namespace Chess.Engine.UnitTest.MovementPatternTests;
 

@@ -1,3 +1,6 @@
+using Chess.Engine.Moves;
+using Chess.Engine.Pieces;
+
 namespace Chess.Engine;
 
 public enum GameStatus

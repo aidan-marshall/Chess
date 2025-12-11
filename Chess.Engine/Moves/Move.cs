@@ -1,4 +1,4 @@
-namespace Chess.Engine;
+namespace Chess.Engine.Moves;
 
 internal readonly record struct Move(Position From, Position To)
 {
