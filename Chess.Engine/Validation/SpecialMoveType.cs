@@ -6,6 +6,5 @@ internal enum SpecialMoveType
     EnPassant,
     CastleKingSide,
     CastleQueenSide,
-    Promotion,
-    Capture
+    Promotion
 }

@@ -14,4 +14,9 @@ internal static class Extensions
     public static int HomeRank(this PieceColour colour) => colour == PieceColour.White ? 7 : 0;
 
     public static int PromotionRank(this PieceColour colour) => colour == PieceColour.White ? 0 : 7;
+
+    public static bool IsGameOver(this GameState gameStatus) =>
+        gameStatus == GameState.Checkmate ||
+        gameStatus == GameState.Stalemate ||
+        gameStatus == GameState.Draw;
 }

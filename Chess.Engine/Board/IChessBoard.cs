@@ -1,11 +1,12 @@
 using Chess.Engine.Moves;
 using Chess.Engine.Pieces;
 
-namespace Chess.Engine;
+namespace Chess.Engine.Board;
 
 internal interface IChessBoard
 {
     Position? EnPassantTargetSquare { get; set; }
+    List<Move> Moves { get; set; }
     Piece? GetPiece(Position position);
     void SetPiece(Position position, Piece? piece);
     void Clear();

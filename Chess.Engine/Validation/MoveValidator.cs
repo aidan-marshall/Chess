@@ -1,4 +1,5 @@
-﻿using Chess.Engine.Helpers;
+﻿using Chess.Engine.Board;
+using Chess.Engine.Helpers;
 using Chess.Engine.Moves;
 using Chess.Engine.Pieces;
 
@@ -34,10 +35,21 @@ internal sealed class MoveValidator
         if (!MovePathIsClear(move, board, movementPattern, movingPiece, specialMoveResult.CastlingRookMove?.To))
             return MoveValidationResult.Illegal();
 
-        if (MoveLeavesKingInCheck(move, board, movingPiece.Colour))
+        if (MoveLeavesKingInCheck(move, board, movingPiece.Colour, specialMoveResult))
             return MoveValidationResult.Illegal();
 
-        return MoveValidationResult.LegalNormal();
+        if (movementPattern == MovementPatternType.PawnDoubleStep)
+            specialMoveResult.IsPawnDoubleStep = true;
+
+        if (movementPattern == MovementPatternType.PawnDoubleStep)
+            {
+            var enPassantCapturePosition = Position.Of(
+                move.From.Row + Math.Sign(move.RowDiff),
+                move.From.Column);
+            return MoveValidationResult.LegalNormal(enPassantCapturePosition);
+        }
+
+        return specialMoveResult;
     }
 
     private static bool IsKingInCheck(
@@ -51,11 +63,12 @@ internal sealed class MoveValidator
     private static bool MoveLeavesKingInCheck(
         Move move,
         IChessBoard board,
-        PieceColour movingColour)
+        PieceColour movingColour,
+        MoveValidationResult moveValidatiotResult)
     {
         var simulatedBoard = board.Clone();
 
-        MoveService.ExecuteMove(simulatedBoard, move);
+        MoveService.ExecuteValidatedMove(simulatedBoard, move, moveValidatiotResult);
 
         return IsKingInCheck(simulatedBoard, movingColour);
     }

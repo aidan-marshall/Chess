@@ -1,4 +1,5 @@
-﻿using Chess.Engine.Helpers;
+﻿using Chess.Engine.Board;
+using Chess.Engine.Helpers;
 using Chess.Engine.Moves;
 using Chess.Engine.Pieces;
 
@@ -44,7 +45,7 @@ internal class SpecialMoveValidator
         if (targetPiece.Colour == movingPiece.Colour)
             return MoveValidationResult.Illegal();
 
-        return MoveValidationResult.LegalCapture(move.To);
+        return MoveValidationResult.LegalNormal();
     }
 
     private static MoveValidationResult PawnDoubleStep(Piece movingPiece, Piece? targetPiece)

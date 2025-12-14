@@ -5,23 +5,22 @@ namespace Chess.Engine.Validation;
 internal sealed record MoveValidationResult(
     bool IsLegal,
     SpecialMoveType SpecialMoveType = SpecialMoveType.None,
-    Position? CapturedPawn = null,
-    Move? CastlingRookMove = null
+    Position? EnPassantCapturedPawn = null,
+    Move? CastlingRookMove = null,
+    bool IsPawnDoubleStep = false
     )
 {
     public bool IsLegal { get; } = IsLegal;
     public SpecialMoveType SpecialMoveType { get; } = SpecialMoveType;
-    public Position? EnPassantCapturedPawn { get; } = CapturedPawn;
+    public Position? EnPassantCapturedPawn { get; } = EnPassantCapturedPawn;
     public Move? CastlingRookMove { get; } = CastlingRookMove;
+    public bool IsPawnDoubleStep { get; set; } = IsPawnDoubleStep;
 
     public static MoveValidationResult Illegal()
         => new(false);
 
-    public static MoveValidationResult LegalNormal()
-        => new(true);
-
-    public static MoveValidationResult LegalCapture(Position capturedPawn)
-        => new(true, SpecialMoveType.Capture, capturedPawn);
+    public static MoveValidationResult LegalNormal(bool isPawnDoubleStep = false)
+        => new(true, IsPawnDoubleStep: isPawnDoubleStep);
 
     public static MoveValidationResult LegalPromotion()
         => new(false, SpecialMoveType.Promotion);
