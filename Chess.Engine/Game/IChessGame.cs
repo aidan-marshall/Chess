@@ -10,4 +10,6 @@ internal interface IChessGame
     IReadOnlyList<Move> MoveHistory { get; }
     GameMoveResult TryMakeMove(Move move, PieceColour moveColour);
     GameMoveResult CompletePromotion(PieceType promotionPieceType);
+    string ToFen();
+    bool LoadFromFen(string fen, out string? error);
 }

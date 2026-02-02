@@ -1,4 +1,4 @@
-using Chess.Engine.Board;
+﻿using Chess.Engine.Board;
 using Chess.Engine.Moves;
 using Chess.Engine.Pieces;
 
@@ -60,24 +60,7 @@ public static class ChessBoardTestFactory
         var board = new ChessBoard();
         board.Clear();
         board.SetPiece(Position.Of(1, 4), Piece.Pawn(PieceColour.White));     // White pawn on e7
-        board.SetPiece(Position.Of(0, 4), Piece.King(PieceColour.Black));     // Black king on e8 (directly in line)
-        board.SetPiece(Position.Of(7, 4), Piece.King(PieceColour.White));
-        return board;
-    }
-
-    /// <summary>
-    /// Creates a board where promoting to a queen results in checkmate to the black king.
-    /// The black king is trapped with no escape squares.
-    /// </summary>
-    internal static IChessBoard CreateBoardWithPromotionCheckmate()
-    {
-        var board = new ChessBoard();
-        board.Clear();
-        board.SetPiece(Position.Of(1, 4), Piece.Pawn(PieceColour.White));     // White pawn on e7
-        board.SetPiece(Position.Of(0, 4), Piece.King(PieceColour.Black));     // Black king on e8
-        // Block escape squares with white rooks
-        board.SetPiece(Position.Of(0, 3), Piece.Rook(PieceColour.White));     // Rook on d8
-        board.SetPiece(Position.Of(0, 5), Piece.Rook(PieceColour.White));     // Rook on f8
+        board.SetPiece(Position.Of(0, 3), Piece.King(PieceColour.Black));     // Black king on e8 (directly in line)
         board.SetPiece(Position.Of(7, 4), Piece.King(PieceColour.White));
         return board;
     }

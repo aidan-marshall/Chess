@@ -1,4 +1,5 @@
 ﻿using Chess.Engine.Board;
+using Chess.Engine.FenNotation;
 using Chess.Engine.Helpers;
 using Chess.Engine.Moves;
 using Chess.Engine.Pieces;
@@ -16,6 +17,7 @@ internal class ChessGame(IChessBoard board) : IChessGame
     private readonly List<Move> _moveHistory = [];
     private readonly List<CapturedPiece> _capturedPieces = [];
     private readonly Dictionary<string, int> _positionCounts = [];
+    private int _fullMoveNumber = 1;
 
     private int _halfMoveClock = 0;
 
@@ -45,11 +47,13 @@ internal class ChessGame(IChessBoard board) : IChessGame
         UpdateEnPassantTargetSquare(move, movedPiece, moveValidationResult);
         UpdateHalfMoveClock(movedPiece, capturedPiece);
 
+        if (ToMove == PieceColour.Black)
+            _fullMoveNumber++;
+
         ToMove = ToMove.Opposite();
 
         RecordMove(move, moveValidationResult, capturedPiece);
         RecordPosition();
-        UpdateGameState(ToMove);
 
         if (moveValidationResult.SpecialMoveType == SpecialMoveType.Promotion)
         {
@@ -60,6 +64,8 @@ internal class ChessGame(IChessBoard board) : IChessGame
             State = GameState.PromotionPending;
             return GameMoveResult.RequiresPromotion(moveValidationResult, capturedPiece);
         }
+
+        UpdateGameState(ToMove);
 
         return GameMoveResult.Legal(moveValidationResult, capturedPiece, State);
     }
@@ -287,5 +293,60 @@ internal class ChessGame(IChessBoard board) : IChessGame
                 ? ~CastlingRights.WhiteKingSide
                 : ~CastlingRights.BlackKingSide;
         }
+    }
+
+    /// <summary>
+    /// Exports the current game state to FEN notation
+    /// </summary>
+    public string ToFen()
+    {
+        return FenUtility.ToFen(_board, ToMove, _halfMoveClock, _fullMoveNumber);
+    }
+
+    /// <summary>
+    /// Loads a game state from FEN notation.
+    /// </summary>
+    public bool LoadFromFen(string fen, out string? error)
+    {
+        var result = FenUtility.FromFen(fen, _board);
+
+        if (!result.IsSuccess)
+        {
+            error = result.ErrorMessage;
+            return false;
+        }
+
+        // Reset game state
+        ToMove = result.ToMove;
+        _halfMoveClock = result.HalfMoveClock;
+        _fullMoveNumber = result.FullMoveNumber;
+        _moveHistory.Clear();
+        _capturedPieces.Clear();
+        _positionCounts.Clear();
+        _pendingPromotionMove = null;
+        _pendingPromotionPawn = null;
+        _pendingPromotionCapturedPiece = null;
+
+        // Record the initial position
+        RecordPosition();
+
+        // Update game state
+        UpdateGameState(ToMove);
+
+        error = null;
+        return true;
+    }
+
+    public static ChessGame? FromFen(string fen, out string? error)
+    {
+        var board = new ChessBoard();
+        var game = new ChessGame(board);
+
+        if (!game.LoadFromFen(fen, out error))
+        {
+            return null;
+        }
+
+        return game;
     }
 }
