@@ -42,12 +42,7 @@ internal sealed class MoveValidator
             specialMoveResult.IsPawnDoubleStep = true;
 
         if (movementPattern == MovementPatternType.PawnDoubleStep)
-            {
-            var enPassantCapturePosition = Position.Of(
-                move.From.Row + Math.Sign(move.RowDiff),
-                move.From.Column);
-            return MoveValidationResult.LegalNormal(enPassantCapturePosition);
-        }
+            return MoveValidationResult.LegalNormal(true);
 
         return specialMoveResult;
     }

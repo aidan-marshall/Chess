@@ -2,14 +2,16 @@
 using Chess.Engine.Pieces;
 using Chess.Engine.Validation;
 
-namespace Chess.Engine;
+namespace Chess.Engine.Game;
 
 internal sealed record GameMoveResult(
     bool IsSuccess,
     MoveValidationResult? ValidationResult = null,
     Piece? CapturedPiece = null,
     GameState? NewGameState = null,
-    string? Error = null)
+    string? Error = null,
+    DrawReason? DrawReason = null,
+    PieceType? PromotedToPieceType = null)
 {
     internal static GameMoveResult Illegal(string error)
         => new(
@@ -37,4 +39,18 @@ internal sealed record GameMoveResult(
             NewGameState: GameState.PromotionPending
             );
     }
+
+    /// <summary>
+    /// Creates a result for a successful promotion completion.
+    /// </summary>
+    internal static GameMoveResult PromotionCompleted(
+        PieceType promotedTo,
+        GameState newState,
+        Piece? capturedPiece = null)
+        => new(
+            true,
+            NewGameState: newState,
+            CapturedPiece: capturedPiece,
+            PromotedToPieceType: promotedTo
+            );
 }

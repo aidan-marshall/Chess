@@ -10,17 +10,23 @@ internal class ChessBoard : IChessBoard
     public List<Move> Moves { get; set; } = [];
     public Position? EnPassantTargetSquare { get; set; }
 
+    public CastlingRights CastlingRights { get; set; }
+
     public ChessBoard()
     {
         _board = new Piece?[8, 8];
+        CastlingRights = CastlingRights.WhiteKingSide | CastlingRights.WhiteQueenSide |
+                         CastlingRights.BlackKingSide | CastlingRights.BlackQueenSide;
+
         Setup();
     }
 
-    public ChessBoard(Piece?[,] board, Position? enPassantTargetSquare, List<Move> moves)
+    public ChessBoard(Piece?[,] board, Position? enPassantTargetSquare, List<Move> moves, CastlingRights castlingRights)
     {
         _board = board;
         Moves = moves;
         EnPassantTargetSquare = enPassantTargetSquare;
+        CastlingRights |= castlingRights;
     }
 
     public Piece? GetPiece(Position position)
@@ -222,12 +228,12 @@ internal class ChessBoard : IChessBoard
         {
             for (int c = 0; c < 8; c++)
             {
-                newBoard[r, c] = _board[r, c]?.Clone();
+                newBoard[r, c] = this._board[r, c]?.Clone();
             }
         }
 
-        var newMoves = new List<Move>(Moves);
+        var newMoves = new List<Move>(this.Moves);
 
-        return new ChessBoard(newBoard, EnPassantTargetSquare, newMoves);
+        return new ChessBoard(newBoard, this.EnPassantTargetSquare, newMoves, this.CastlingRights);
     }
 }

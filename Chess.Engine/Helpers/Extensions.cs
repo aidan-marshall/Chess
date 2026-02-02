@@ -1,4 +1,5 @@
-﻿using Chess.Engine.Pieces;
+﻿using Chess.Engine.Game;
+using Chess.Engine.Pieces;
 using Chess.Engine.Validation;
 
 namespace Chess.Engine.Helpers;

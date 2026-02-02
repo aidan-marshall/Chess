@@ -5,6 +5,7 @@ namespace Chess.Engine.Board;
 
 internal interface IChessBoard
 {
+    CastlingRights CastlingRights { get; set; }
     Position? EnPassantTargetSquare { get; set; }
     List<Move> Moves { get; set; }
     Piece? GetPiece(Position position);

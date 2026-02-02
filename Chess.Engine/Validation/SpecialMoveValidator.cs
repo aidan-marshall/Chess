@@ -82,6 +82,20 @@ internal class SpecialMoveValidator
 
     private static MoveValidationResult Castle(bool isKingSide, Piece king, IChessBoard board)
     {
+        var requiredRight = king.Colour switch
+        {
+            PieceColour.White => isKingSide
+                ? CastlingRights.WhiteKingSide
+                : CastlingRights.WhiteQueenSide,
+            PieceColour.Black => isKingSide
+                ? CastlingRights.BlackKingSide
+                : CastlingRights.BlackQueenSide,
+            _ => CastlingRights.None
+        };
+
+        if (!board.CastlingRights.HasFlag(requiredRight))
+            return MoveValidationResult.Illegal();
+
         if (king.Type != PieceType.King)
             return MoveValidationResult.Illegal();
 

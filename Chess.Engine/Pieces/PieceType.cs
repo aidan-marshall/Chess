@@ -1,6 +1,6 @@
 ﻿namespace Chess.Engine.Pieces;
 
-internal enum PieceType
+public enum PieceType
 {
     Pawn,
     Rook,

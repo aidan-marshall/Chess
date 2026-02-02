@@ -1,4 +1,4 @@
-namespace Chess.Engine;
+namespace Chess.Engine.Game;
 
 public enum GameState
 {

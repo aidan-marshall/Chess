@@ -23,7 +23,7 @@ internal sealed record MoveValidationResult(
         => new(true, IsPawnDoubleStep: isPawnDoubleStep);
 
     public static MoveValidationResult LegalPromotion()
-        => new(false, SpecialMoveType.Promotion);
+        => new(true, SpecialMoveType.Promotion);
 
     public static MoveValidationResult LegalEnPassant(Position capturedPawn)
         => new(true, SpecialMoveType.EnPassant, capturedPawn);
