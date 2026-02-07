@@ -1,7 +1,7 @@
 ﻿using Chess.Engine.Board;
-using Chess.Engine.FenNotation;
 using Chess.Engine.Helpers;
 using Chess.Engine.Moves;
+using Chess.Engine.Notation;
 using Chess.Engine.Pieces;
 using Chess.Engine.Validation;
 
@@ -18,6 +18,7 @@ internal class ChessGame(IChessBoard board) : IChessGame
     private readonly List<CapturedPiece> _capturedPieces = [];
     private readonly Dictionary<string, int> _positionCounts = [];
     private int _fullMoveNumber = 1;
+    private readonly List<string> _moveNotations = [];
 
     private int _halfMoveClock = 0;
 
@@ -27,6 +28,7 @@ internal class ChessGame(IChessBoard board) : IChessGame
     private Piece? _pendingPromotionCapturedPiece = null;
 
     public IReadOnlyList<Move> MoveHistory => _moveHistory;
+    public IReadOnlyList<string> MoveNotations => _moveNotations;
 
     public GameMoveResult TryMakeMove(Move move, PieceColour moveColour)
     {
@@ -67,6 +69,12 @@ internal class ChessGame(IChessBoard board) : IChessGame
 
         UpdateGameState(ToMove);
 
+        RecordMoveNotation(
+            move,
+            movedPiece,
+            capturedPiece != null,
+            moveValidationResult.SpecialMoveType);
+
         return GameMoveResult.Legal(moveValidationResult, capturedPiece, State);
     }
 
@@ -91,6 +99,16 @@ internal class ChessGame(IChessBoard board) : IChessGame
 
         // Update game state after promotion is complete
         UpdateGameState(ToMove);
+
+        if (_pendingPromotionMove.HasValue && _pendingPromotionPawn != null)
+        {
+            RecordMoveNotation(
+                _pendingPromotionMove.Value,
+                _pendingPromotionPawn,
+                _pendingPromotionCapturedPiece != null,
+                SpecialMoveType.Promotion,
+                promotionPieceType);
+        }
 
         // Prepare result
         var result = GameMoveResult.PromotionCompleted(promotionPieceType, State, _pendingPromotionCapturedPiece);
@@ -323,6 +341,7 @@ internal class ChessGame(IChessBoard board) : IChessGame
         _moveHistory.Clear();
         _capturedPieces.Clear();
         _positionCounts.Clear();
+        _moveNotations.Clear();
         _pendingPromotionMove = null;
         _pendingPromotionPawn = null;
         _pendingPromotionCapturedPiece = null;
@@ -348,5 +367,37 @@ internal class ChessGame(IChessBoard board) : IChessGame
         }
 
         return game;
+    }
+
+    /// <summary>
+    /// Records the algebraic notation for a move.
+    /// Call this after a move is made and UpdateGameState is called.
+    /// </summary>
+    private void RecordMoveNotation(
+        Move move,
+        Piece movedPiece,
+        bool isCapture,
+        SpecialMoveType specialMoveType,
+        PieceType? promotionPiece = null)
+    {
+        bool isCastleKingSide = specialMoveType == SpecialMoveType.CastleKingSide;
+        bool isCastleQueenSide = specialMoveType == SpecialMoveType.CastleQueenSide;
+
+        // State has been updated, so check/checkmate is accurate
+        bool isCheck = State == GameState.Check;
+        bool isCheckmate = State == GameState.Checkmate;
+
+        var notation = AlgebraicNotation.ToAlgebraic(
+            move,
+            _board,
+            movedPiece,
+            isCapture,
+            isCheck,
+            isCheckmate,
+            promotionPiece,
+            isCastleKingSide,
+            isCastleQueenSide);
+
+        _moveNotations.Add(notation);
     }
 }

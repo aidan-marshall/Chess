@@ -1,6 +1,6 @@
 ﻿using Chess.Engine.Pieces;
 
-namespace Chess.Engine.FenNotation;
+namespace Chess.Engine.Notation;
 
 /// <summary>
 /// Result of parsing a FEN string

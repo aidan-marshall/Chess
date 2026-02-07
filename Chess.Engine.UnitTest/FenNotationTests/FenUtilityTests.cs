@@ -1,6 +1,6 @@
 ﻿using Chess.Engine.Board;
-using Chess.Engine.FenNotation;
 using Chess.Engine.Moves;
+using Chess.Engine.Notation;
 using Chess.Engine.Pieces;
 
 namespace Chess.Engine.Tests.FenNotation;

@@ -3,7 +3,7 @@ using Chess.Engine.Moves;
 using Chess.Engine.Pieces;
 using System.Text;
 
-namespace Chess.Engine.FenNotation;
+namespace Chess.Engine.Notation;
 
 /// <summary>
 /// Utility for converting chess positions to/from FEN (Forsyth-Edwards Notation)
