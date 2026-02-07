@@ -7,5 +7,6 @@ public enum GameState
     Checkmate,
     Stalemate,
     Draw,
-    PromotionPending
+    PromotionPending,
+    Resigned
 }

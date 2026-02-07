@@ -19,8 +19,9 @@ internal class ChessGame(IChessBoard board) : IChessGame
     private readonly Dictionary<string, int> _positionCounts = [];
     private int _fullMoveNumber = 1;
     private readonly List<string> _moveNotations = [];
-
     private int _halfMoveClock = 0;
+    private GameResult? _gameResult = null;
+    private PieceColour? _drawOfferedBy = null;
 
     // Promotion state tracking
     private Move? _pendingPromotionMove = null;
@@ -29,6 +30,8 @@ internal class ChessGame(IChessBoard board) : IChessGame
 
     public IReadOnlyList<Move> MoveHistory => _moveHistory;
     public IReadOnlyList<string> MoveNotations => _moveNotations;
+    public GameResult? GameResult => _gameResult;
+    public PieceColour? DrawOfferedBy => _drawOfferedBy;
 
     public GameMoveResult TryMakeMove(Move move, PieceColour moveColour)
     {
@@ -75,6 +78,8 @@ internal class ChessGame(IChessBoard board) : IChessGame
             capturedPiece != null,
             moveValidationResult.SpecialMoveType);
 
+        UpdateGameResult();
+
         return GameMoveResult.Legal(moveValidationResult, capturedPiece, State);
     }
 
@@ -100,15 +105,14 @@ internal class ChessGame(IChessBoard board) : IChessGame
         // Update game state after promotion is complete
         UpdateGameState(ToMove);
 
-        if (_pendingPromotionMove.HasValue && _pendingPromotionPawn != null)
-        {
-            RecordMoveNotation(
-                _pendingPromotionMove.Value,
-                _pendingPromotionPawn,
-                _pendingPromotionCapturedPiece != null,
-                SpecialMoveType.Promotion,
-                promotionPieceType);
-        }
+        RecordMoveNotation(
+            _pendingPromotionMove.Value,
+            _pendingPromotionPawn,
+            _pendingPromotionCapturedPiece != null,
+            SpecialMoveType.Promotion,
+            promotionPieceType);
+
+        UpdateGameResult();
 
         // Prepare result
         var result = GameMoveResult.PromotionCompleted(promotionPieceType, State, _pendingPromotionCapturedPiece);
@@ -338,6 +342,7 @@ internal class ChessGame(IChessBoard board) : IChessGame
         ToMove = result.ToMove;
         _halfMoveClock = result.HalfMoveClock;
         _fullMoveNumber = result.FullMoveNumber;
+
         _moveHistory.Clear();
         _capturedPieces.Clear();
         _positionCounts.Clear();
@@ -345,6 +350,8 @@ internal class ChessGame(IChessBoard board) : IChessGame
         _pendingPromotionMove = null;
         _pendingPromotionPawn = null;
         _pendingPromotionCapturedPiece = null;
+        _gameResult = null;
+        _drawOfferedBy = null;
 
         // Record the initial position
         RecordPosition();
@@ -399,5 +406,106 @@ internal class ChessGame(IChessBoard board) : IChessGame
             isCastleQueenSide);
 
         _moveNotations.Add(notation);
+    }
+
+    /// <summary>
+    /// Resigns the game for the specified color.
+    /// </summary>
+    /// <param name="resigningColour">The color that is resigning</param>
+    public void Resign(PieceColour resigningColour)
+    {
+        if (State.IsGameOver() && State != GameState.PromotionPending)
+        {
+            throw new InvalidOperationException("Cannot resign: game is already over");
+        }
+
+        // Set the result based on who resigned
+        _gameResult = resigningColour == PieceColour.White
+            ? Game.GameResult.BlackWinsByResignation
+            : Game.GameResult.WhiteWinsByResignation;
+
+        State = GameState.Resigned;
+    }
+
+    /// <summary>
+    /// Offers a draw from the specified color.
+    /// </summary>
+    /// <param name="offeringColour">The color offering the draw</param>
+    public void OfferDraw(PieceColour offeringColour)
+    {
+        if (State.IsGameOver() && State != GameState.PromotionPending)
+        {
+            throw new InvalidOperationException("Cannot offer draw: game is already over");
+        }
+
+        if (ToMove != offeringColour)
+        {
+            throw new InvalidOperationException("Cannot offer draw: it's not your turn");
+        }
+
+        _drawOfferedBy = offeringColour;
+    }
+
+    /// <summary>
+    /// Accepts a draw offer from the opponent.
+    /// </summary>
+    /// <param name="acceptingColour">The color accepting the draw</param>
+    public void AcceptDraw(PieceColour acceptingColour)
+    {
+        if (!_drawOfferedBy.HasValue)
+        {
+            throw new InvalidOperationException("Cannot accept draw: no draw has been offered");
+        }
+
+        if (_drawOfferedBy.Value == acceptingColour)
+        {
+            throw new InvalidOperationException("Cannot accept your own draw offer");
+        }
+
+        // Set result and state
+        _gameResult = Game.GameResult.DrawByAgreement;
+        State = GameState.Draw;
+        DrawReason = Game.DrawReason.Agreement;
+        _drawOfferedBy = null;
+    }
+
+    /// <summary>
+    /// Declines a draw offer.
+    /// </summary>
+    public void DeclineDraw()
+    {
+        _drawOfferedBy = null;
+    }
+
+    /// <summary>
+    /// Updates the game result based on the current game state.
+    /// Call this after UpdateGameState.
+    /// </summary>
+    private void UpdateGameResult()
+    {
+        // Don't overwrite manual results (resignations, agreements)
+        if (_gameResult.HasValue)
+        {
+            return;
+        }
+
+        _gameResult = State switch
+        {
+            GameState.Checkmate => (GameResult?)(ToMove == PieceColour.White
+                                ? Game.GameResult.BlackWinsByCheckmate
+                                : Game.GameResult.WhiteWinsByCheckmate),// ToMove is the side that's in checkmate (just got checkmated)
+                                                                        // So the OTHER side won
+            GameState.Stalemate => (GameResult?)Game.GameResult.DrawByStalemate,
+            GameState.Draw => DrawReason switch
+            {
+                Game.DrawReason.FiftyMoveRule => Game.GameResult.DrawByFiftyMoveRule,
+                Game.DrawReason.ThreefoldRepetition => Game.GameResult.DrawByThreefoldRepetition,
+                Game.DrawReason.InsufficientMaterial => Game.GameResult.DrawByInsufficientMaterial,
+                Game.DrawReason.Agreement => Game.GameResult.DrawByAgreement,
+                Game.DrawReason.StaleMate => Game.GameResult.DrawByStalemate,
+                _ => null // Unknown draw reason, leave as null
+            },// Map DrawReason to GameResult
+            _ => null,// Ongoing, Check, PromotionPending - no result yet
+        };
     }
 }

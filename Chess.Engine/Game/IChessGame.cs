@@ -12,4 +12,8 @@ internal interface IChessGame
     GameMoveResult CompletePromotion(PieceType promotionPieceType);
     string ToFen();
     bool LoadFromFen(string fen, out string? error);
+    void Resign(PieceColour resigningColour);
+    void OfferDraw(PieceColour offeringColour);
+    void AcceptDraw(PieceColour acceptingColour);
+    void DeclineDraw();
 }
