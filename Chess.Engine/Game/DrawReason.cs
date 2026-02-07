@@ -1,6 +1,6 @@
 ﻿namespace Chess.Engine.Game;
 
-internal enum DrawReason
+public enum DrawReason
 {
     StaleMate,
     FiftyMoveRule,
