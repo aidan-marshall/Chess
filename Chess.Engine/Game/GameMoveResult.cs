@@ -4,7 +4,7 @@ using Chess.Engine.Validation;
 
 namespace Chess.Engine.Game;
 
-internal sealed record GameMoveResult(
+public sealed record GameMoveResult(
     bool IsSuccess,
     MoveValidationResult? ValidationResult = null,
     Piece? CapturedPiece = null,

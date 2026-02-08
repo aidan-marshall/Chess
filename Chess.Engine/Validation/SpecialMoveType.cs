@@ -1,6 +1,6 @@
 ﻿namespace Chess.Engine.Validation;
 
-internal enum SpecialMoveType
+public enum SpecialMoveType
 {
     None,
     EnPassant,

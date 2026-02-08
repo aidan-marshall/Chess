@@ -2,7 +2,7 @@
 
 namespace Chess.Engine.Validation;
 
-internal sealed record MoveValidationResult(
+public sealed record MoveValidationResult(
     bool IsLegal,
     SpecialMoveType SpecialMoveType = SpecialMoveType.None,
     Position? EnPassantCapturedPawn = null,

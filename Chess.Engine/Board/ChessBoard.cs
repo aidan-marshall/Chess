@@ -4,7 +4,7 @@ using Chess.Engine.Pieces;
 
 namespace Chess.Engine.Board;
 
-internal class ChessBoard : IChessBoard
+public class ChessBoard : IChessBoard
 {
     private Piece?[,] _board;
     public List<Move> Moves { get; set; } = [];

@@ -1,7 +1,7 @@
 ﻿namespace Chess.Engine.Board;
 
 [Flags]
-internal enum CastlingRights
+public enum CastlingRights
 {
     None = 0,
     WhiteKingSide = 1,

@@ -1,6 +1,6 @@
 namespace Chess.Engine.Moves;
 
-internal readonly record struct Move(Position From, Position To)
+public readonly record struct Move(Position From, Position To)
 {
     public Position From { get; } = From;
     public Position To { get; } = To;

@@ -7,7 +7,7 @@ using Chess.Engine.Validation;
 
 namespace Chess.Engine.Game;
 
-internal class ChessGame(IChessBoard board) : IChessGame
+public class ChessGame(IChessBoard board) : IChessGame
 {
     public PieceColour ToMove { get; private set; } = PieceColour.White;
     public GameState State { get; private set; } = GameState.Ongoing;
@@ -32,6 +32,8 @@ internal class ChessGame(IChessBoard board) : IChessGame
     public IReadOnlyList<string> MoveNotations => _moveNotations;
     public GameResult? GameResult => _gameResult;
     public PieceColour? DrawOfferedBy => _drawOfferedBy;
+    public int HalfMoveClock => _halfMoveClock;
+    public int FullMoveNumber => _fullMoveNumber;
 
     public GameMoveResult TryMakeMove(Move move, PieceColour moveColour)
     {

@@ -1,6 +1,6 @@
 ﻿namespace Chess.Engine.Moves;
 
-internal readonly record struct Position(int Row, int Column)
+public readonly record struct Position(int Row, int Column)
 {
     public int Row { get; } = Row;
     public int Column { get; } = Column;

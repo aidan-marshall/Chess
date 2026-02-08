@@ -1,6 +1,6 @@
 ﻿namespace Chess.Engine.Pieces;
 
-internal sealed class Piece(PieceType type, PieceColour colour, int moveAmount = 0)
+public sealed class Piece(PieceType type, PieceColour colour, int moveAmount = 0)
 {
     public PieceType Type { get; } = type;
     public PieceColour Colour { get; } = colour;

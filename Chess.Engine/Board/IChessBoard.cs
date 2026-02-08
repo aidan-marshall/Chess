@@ -3,7 +3,7 @@ using Chess.Engine.Pieces;
 
 namespace Chess.Engine.Board;
 
-internal interface IChessBoard
+public interface IChessBoard
 {
     CastlingRights CastlingRights { get; set; }
     Position? EnPassantTargetSquare { get; set; }
