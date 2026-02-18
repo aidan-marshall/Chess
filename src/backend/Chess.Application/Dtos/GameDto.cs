@@ -8,6 +8,7 @@ public sealed record GameDto
     public string? GameResult { get; init; }
     public string? DrawReason { get; init; }
     public string ToMove { get; init; } = null!;
+    public string? DrawOfferedBy { get; init; }
     public int FullMoveNumber { get; init; }
     public int HalfMoveClock { get; init; }
     public DateTime CreatedAtUtc { get; init; }

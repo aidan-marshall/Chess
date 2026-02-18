@@ -13,6 +13,7 @@ public class Game
     public PieceColour ToMove { get; set; }
     public int FullMoveNumber { get; set; }
     public int HalfMoveClock { get; set; }
+    public PieceColour? DrawOfferedBy { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public DateTime UpdatedAtUtc { get; set; }
     public ICollection<Move> Moves { get; set; } = [];

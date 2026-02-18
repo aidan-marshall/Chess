@@ -48,6 +48,10 @@ public class GameEntityConfiguration : IEntityTypeConfiguration<Game>
             .IsRequired()
             .HasDefaultValue(0);
 
+        builder.Property(g => g.DrawOfferedBy)
+            .HasConversion<string>()
+            .HasMaxLength(10);
+
         builder.Property(g => g.CreatedAtUtc)
             .IsRequired();
 

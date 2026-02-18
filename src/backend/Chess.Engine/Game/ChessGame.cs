@@ -320,6 +320,35 @@ public class ChessGame(IChessBoard board) : IChessGame
     }
 
     /// <summary>
+    /// Returns all legal destination squares for the piece at the given position.
+    /// Only returns moves for the side that is currently to move.
+    /// </summary>
+    public IReadOnlyList<Position> GetLegalMovesFrom(Position from)
+    {
+        var piece = _board.GetPiece(from);
+
+        if (piece is null || piece.Colour != ToMove)
+            return [];
+
+        var legalMoves = new List<Position>();
+
+        for (int r = 0; r < 8; r++)
+        {
+            for (int c = 0; c < 8; c++)
+            {
+                var to = Position.Of(r, c);
+                var move = Move.Of(from, to);
+                var result = MoveValidator.Validate(move, _board, ToMove);
+
+                if (result.IsLegal)
+                    legalMoves.Add(to);
+            }
+        }
+
+        return legalMoves;
+    }
+
+    /// <summary>
     /// Exports the current game state to FEN notation
     /// </summary>
     public string ToFen()
