@@ -17,18 +17,18 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
     private readonly ChessDbContext _dbContext = dbContext;
     private readonly ILogger<GameService> _logger = logger;
 
-    public async Task<GameDto?> CreateGameAsync(CreateGameDto request)
+    public async Task<GameDto> CreateGameAsync(string? fenPosition)
     {
         _logger.LogInformation("Creating new chess game");
 
         var board = new ChessBoard();
         var game = new ChessGame(board);
 
-        if (!string.IsNullOrEmpty(request.FenPosition))
+        if (!string.IsNullOrEmpty(fenPosition))
         {
-            _logger.LogInformation("Loading game from FEN: {FenPosition}", request.FenPosition);
+            _logger.LogInformation("Loading game from FEN: {FenPosition}", fenPosition);
 
-            if (!game.LoadFromFen(request.FenPosition, out var error))
+            if (!game.LoadFromFen(fenPosition, out var error))
             {
                 _logger.LogError("Failed to load game from FEN: {Error}", error);
                 throw new ArgumentException($"Invalid FEN position: {error}");
@@ -181,7 +181,7 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
         return new LegalMovesDto { FromSquare = fromSquare, LegalDestinations = destinations };
     }
 
-    public async Task<GameDto?> ResignAsync(int gameId, ResignDto request)
+    public async Task<GameDto?> ResignAsync(int gameId, PieceColour pieceColour)
     {
         var gameEntity = await _dbContext.Games
             .Include(g => g.Moves)
@@ -193,7 +193,7 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
         if (IsTerminal(gameEntity.GameState))
             throw new InvalidOperationException("Cannot resign: the game is already over");
 
-        gameEntity.GameResult = request.Colour == PieceColour.White
+        gameEntity.GameResult = pieceColour == PieceColour.White
             ? GameResult.BlackWinsByResignation
             : GameResult.WhiteWinsByResignation;
         gameEntity.GameState = GameState.Resigned;
@@ -204,7 +204,7 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
         return GameMapper.ToDto(gameEntity);
     }
 
-    public async Task<GameDto?> OfferDrawAsync(int gameId, DrawActionDto request)
+    public async Task<GameDto?> OfferDrawAsync(int gameId, PieceColour pieceColour)
     {
         var gameEntity = await _dbContext.Games
             .Include(g => g.Moves)
@@ -216,10 +216,10 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
         if (IsTerminal(gameEntity.GameState))
             throw new InvalidOperationException("Cannot offer draw: the game is already over");
 
-        if (gameEntity.ToMove != request.Colour)
+        if (gameEntity.ToMove != pieceColour)
             throw new InvalidOperationException("Cannot offer draw: it is not your turn");
 
-        gameEntity.DrawOfferedBy = request.Colour;
+        gameEntity.DrawOfferedBy = pieceColour;
         gameEntity.UpdatedAtUtc = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();
@@ -227,7 +227,7 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
         return GameMapper.ToDto(gameEntity);
     }
 
-    public async Task<GameDto?> AcceptDrawAsync(int gameId, DrawActionDto request)
+    public async Task<GameDto?> AcceptDrawAsync(int gameId, PieceColour pieceColour)
     {
         var gameEntity = await _dbContext.Games
             .Include(g => g.Moves)
@@ -239,7 +239,7 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
         if (!gameEntity.DrawOfferedBy.HasValue)
             throw new InvalidOperationException("Cannot accept draw: no draw has been offered");
 
-        if (gameEntity.DrawOfferedBy.Value == request.Colour)
+        if (gameEntity.DrawOfferedBy.Value == pieceColour)
             throw new InvalidOperationException("Cannot accept your own draw offer");
 
         gameEntity.GameState = GameState.Draw;
@@ -253,7 +253,7 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
         return GameMapper.ToDto(gameEntity);
     }
 
-    public async Task<GameDto?> DeclineDrawAsync(int gameId, DrawActionDto request)
+    public async Task<GameDto?> DeclineDrawAsync(int gameId)
     {
         var gameEntity = await _dbContext.Games
             .Include(g => g.Moves)

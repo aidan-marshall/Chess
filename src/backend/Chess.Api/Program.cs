@@ -1,10 +1,11 @@
-using Chess.Application.Dtos;
+using Chess.Api.Endpoints;
 using Chess.Application.Services;
 using Chess.Data.EntityFramework;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,102 +44,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors();
-
-const string CurrentVersion = "v1";
-
-var games = app.MapGroup($"/api/{CurrentVersion}/games");
-
-games.MapPost("/", async (CreateGameDto dto, IGameService svc) =>
+app.UseExceptionHandler(err => err.Run(async ctx =>
 {
-    try
-    {
-        var game = await svc.CreateGameAsync(dto);
-        return Results.Created($"/api/{CurrentVersion}/games/{game!.Id}", game);
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.BadRequest(new { error = ex.Message });
-    }
-});
+    var logger = ctx.RequestServices.GetRequiredService<ILogger<Program>>();
+    var ex = ctx.Features.Get<IExceptionHandlerFeature>()?.Error;
 
-games.MapGet("/{id:int}", async (int id, IGameService svc) =>
-{
-    var game = await svc.GetGameAsync(id);
-    return game is null ? Results.NotFound() : Results.Ok(game);
-});
+    logger.LogError(ex, "Unhandled exception occurred");
 
-games.MapPost("/{id:int}/moves", async (int id, MakeMoveDto dto, IGameService svc) =>
-{
-    try
-    {
-        var game = await svc.MakeMoveAsync(id, dto);
-        return game is null ? Results.NotFound() : Results.Ok(game);
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.BadRequest(new { error = ex.Message });
-    }
-    catch (InvalidOperationException ex)
-    {
-        return Results.Conflict(new { error = ex.Message });
-    }
-});
+    ctx.Response.StatusCode = 500;
+    await ctx.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred" });
+}));
 
-games.MapGet("/{id:int}/legal-moves/{from}", async (int id, string from, IGameService svc) =>
-{
-    var result = await svc.GetLegalMovesAsync(id, from);
-    return result is null ? Results.NotFound() : Results.Ok(result);
-});
+const string currentVersion = "v1";
 
-games.MapPost("/{id:int}/resign", async (int id, ResignDto dto, IGameService svc) =>
-{
-    try
-    {
-        var game = await svc.ResignAsync(id, dto);
-        return game is null ? Results.NotFound() : Results.Ok(game);
-    }
-    catch (InvalidOperationException ex)
-    {
-        return Results.Conflict(new { error = ex.Message });
-    }
-});
-
-games.MapPost("/{id:int}/draw/offer", async (int id, DrawActionDto dto, IGameService svc) =>
-{
-    try
-    {
-        var game = await svc.OfferDrawAsync(id, dto);
-        return game is null ? Results.NotFound() : Results.Ok(game);
-    }
-    catch (InvalidOperationException ex)
-    {
-        return Results.Conflict(new { error = ex.Message });
-    }
-});
-
-games.MapPost("/{id:int}/draw/accept", async (int id, DrawActionDto dto, IGameService svc) =>
-{
-    try
-    {
-        var game = await svc.AcceptDrawAsync(id, dto);
-        return game is null ? Results.NotFound() : Results.Ok(game);
-    }
-    catch (InvalidOperationException ex)
-    {
-        return Results.Conflict(new { error = ex.Message });
-    }
-});
-
-games.MapPost("/{id:int}/draw/decline", async (int id, DrawActionDto dto, IGameService svc) =>
-{ try
-    {
-        var game = await svc.DeclineDrawAsync(id, dto);
-        return game is null ? Results.NotFound() : Results.Ok(game);
-    }
-    catch (InvalidOperationException ex)
-    {
-        return Results.Conflict(new { error = ex.Message });
-    }
-});
+var api = app.MapGroup($"/api/{currentVersion}");
+api.MapGameEndpoints();
 
 app.Run();
