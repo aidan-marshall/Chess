@@ -66,7 +66,7 @@ public class MoveEntityConfiguration : IEntityTypeConfiguration<Move>
         // Indexes
         builder.HasIndex(m => m.GameId);
 
-        builder.HasIndex(m => new { m.GameId, m.MoveNumber })
+        builder.HasIndex(m => new { m.GameId, m.MoveNumber, m.Colour })
             .IsUnique(); // Each game can only have one move per move number
 
         builder.HasIndex(m => m.CreatedAtUtc);

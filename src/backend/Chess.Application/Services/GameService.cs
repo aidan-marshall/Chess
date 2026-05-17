@@ -144,8 +144,6 @@ public sealed class GameService(ChessDbContext dbContext, ILogger<GameService> l
 
         await _dbContext.SaveChangesAsync();
 
-        gameEntity.Moves.Add(moveEntity);
-
         return GameMapper.ToDto(gameEntity);
     }
 
