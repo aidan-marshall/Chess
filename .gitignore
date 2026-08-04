@@ -1,7 +1,21 @@
+# .NET
 bin/
 obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
+*.user
 .vs/
+riderModule.iml
+_ReSharper.Caches/
 
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editors
+.idea/
+.vscode/
+.claude/
+
+# OS
+.DS_Store
